@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "module": "AMD",
+        "target": "es2017",
+        "outFile": "dist/script.js",
+        "rootDir": "src",
+        "removeComments": true
+    }
+}
