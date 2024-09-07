@@ -252,7 +252,7 @@ export class Monster {
             td.appendChild(div)
         } else {
             modifiers.forEach(modifier => {
-                let element = document.createElement("div") as HTMLDivElement
+                let element = document.createElement("span") as HTMLSpanElement
                 element.className = "table__cell__modifier " + modifier.className
                 element.innerText = modifier.name
                 td.appendChild(element)

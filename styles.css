@@ -61,6 +61,10 @@ table tr:nth-child(even) {
     background-color: #EEE;
 }
 
+.table__name {
+    text-wrap: nowrap;
+}
+
 .table__cell__modifier {
     margin-top: 0.2vh;
     margin-bottom: 0.2vh;
@@ -68,7 +72,7 @@ table tr:nth-child(even) {
     padding-left: 1vw;
     padding-right: 1vw;
     border-radius: 10vw;
-    float: left;
+    text-wrap: nowrap;
 }
 
 td {

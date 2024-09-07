@@ -3981,7 +3981,7 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
             }
             else {
                 modifiers.forEach(modifier => {
-                    let element = document.createElement("div");
+                    let element = document.createElement("span");
                     element.className = "table__cell__modifier " + modifier.className;
                     element.innerText = modifier.name;
                     td.appendChild(element);
