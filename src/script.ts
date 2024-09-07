@@ -14,6 +14,7 @@ function updateTable() {
     let regulation = RegulationH
 
     let filter = {
+        includeTop100: (document.getElementById("top100") as HTMLInputElement).checked,
         includeChoiceScarf: (document.getElementById("choicescarf") as HTMLInputElement).checked,
         includeIronBall: (document.getElementById("choicescarf") as HTMLInputElement).checked,
         includeTailwind: (document.getElementById("tailwind") as HTMLInputElement).checked,

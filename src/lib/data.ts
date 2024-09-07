@@ -22,6 +22,7 @@ export interface PokedexEntry {
  */
 export interface Regulation {
     entries: Array<PokedexEntry>
+    top100: any
 }
 
 interface ModifierEntry {
@@ -332,6 +333,7 @@ export function defaultMonsterFactory(entry: PokedexEntry, filter: Filter): Arra
 }
 
 export interface Filter {
+    includeTop100: boolean
     includeChoiceScarf: boolean
     includeIronBall: boolean
     includeTailwind: boolean
@@ -343,6 +345,12 @@ export function allRegulationFactory(regulation: Regulation, filter: Filter): Ar
     let allMonsters = new Array<Monster>()
 
     regulation.entries.forEach(entry => {
+        if (filter.includeTop100) {
+            if (!regulation.top100[entry.name]) {
+                return
+            }
+        }
+
         //todo this is slow, figure out why concat wasn't working
         let monsters = defaultMonsterFactory(entry, filter)
         monsters.forEach(monster => allMonsters.push(monster))
