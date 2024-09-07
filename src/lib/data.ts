@@ -172,8 +172,8 @@ export class Monster {
     private drawMonsterRow(): HTMLTableRowElement {
         let tr = document.createElement("tr") as HTMLTableRowElement
         tr.className = "table__row"
-        this.drawName(tr)
         this.drawSpeed(tr)
+        this.drawName(tr)
         this.drawStats(tr)
         this.drawIVs(tr)
         this.drawModifiers(tr)
@@ -197,8 +197,7 @@ export class Monster {
     private drawStats(tr: HTMLTableRowElement) {
         let cell = document.createElement("td") as HTMLTableCellElement
         cell.className = "table__cell table__stats"
-        cell.innerText = "" + this.speedEV + this.nature.name
-
+        cell.innerText = this.nature.name + this.speedEV
         tr.appendChild(cell)
     }
 
@@ -231,16 +230,18 @@ export class Monster {
                 className: "table__modifier-ability",
             })
         }
-        if (this.item != Item.None) {
-            modifiers.push({
-                name: this.item.name,
-                className: "table__modifier-item",
-            })
-        }
+
         if (this.field != Field.None) {
             modifiers.push({
                 name: this.field.name,
                 className: "table__modifier-field",
+            })
+        }
+
+        if (this.item != Item.None) {
+            modifiers.push({
+                name: this.item.name,
+                className: "table__modifier-item",
             })
         }
 
@@ -251,10 +252,10 @@ export class Monster {
             td.appendChild(div)
         } else {
             modifiers.forEach(modifier => {
-                let div = document.createElement("div") as HTMLDivElement
-                div.className = "table__cell__modifier " + modifier.className
-                div.innerText = modifier.name
-                td.appendChild(div)
+                let element = document.createElement("div") as HTMLDivElement
+                element.className = "table__cell__modifier " + modifier.className
+                element.innerText = modifier.name
+                td.appendChild(element)
             })
         }
 
@@ -279,11 +280,13 @@ function speedStageModifier(stage: number): number {
  * There is no assumption that modifiers are within acceptable bounds.
  */
 export function effectiveSpeed(monster: Monster): number {
-    return Math.floor(((2 * monster.entry.speed + monster.speedIV + monster.speedEV / 4) * level / 100 + 5) * monster.nature.speedModifier)
+    return Math.floor(
+        Math.floor(((2 * monster.entry.speed + monster.speedIV + monster.speedEV / 4) * level / 100 + 5) * monster.nature.speedModifier)
         * monster.item.speedModifier
         * monster.ability.speedModifier
         * monster.field.speedModifier
         * speedStageModifier(monster.speedStage)
+    )
 }
 
 export function defaultMonsterFactory(monsters: Array<Monster>, entry: PokedexEntry, filter: Filter): void {

@@ -2,7 +2,7 @@ import { Ability, Item, Field, Monster, effectiveSpeed } from "./data"
 
 let table: HTMLTableElement
 let headerRow: HTMLTableRowElement
-const cols = ["Name", "Speed", "Stats", "IV", "Modifier"]
+const cols = ["Speed", "Name", "Stats", "IV", "Modifier"]
 
 
 export function drawTable(monsters: Array<Monster>) {

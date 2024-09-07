@@ -4,7 +4,6 @@ body {
     border: 0;
     width: 100%;
     height: 100%;
-    font-size: large;
 }
 
 input[type=checkbox] {
@@ -20,23 +19,24 @@ input[type=checkbox]+label>.filterbutton {
 }
 
 input[type=checkbox]:checked+label>.filterbutton {
-    background-color: rgb(137, 160, 218);
+    background-color: rgb(161, 177, 216);
 }
 
 #config {
+    padding-top: 3vh;
     width: 100%;
     overflow: hidden;
 }
 
 .filterbutton {
-    width: 30vw;
+    width: 32vw;
     text-align: center;
     vertical-align: middle;
-    margin-top: 1px;
+    margin-top: 0.5vw;
     margin-left: 0.5vw;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border-radius: 20px;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    border-radius: 10vw;
     float: left;
 }
 
@@ -49,8 +49,9 @@ table {
     border-collapse: collapse
 }
 
-.table {
-    float: right;
+#table {
+    float: none;
+    overflow: scroll;
 }
 
 table tr:nth-child(odd) {
@@ -62,19 +63,22 @@ table tr:nth-child(even) {
 }
 
 .table__cell__modifier {
-    width: 15vw;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    width: 20vw;
+    max-width: 100px;
+    margin-top: 0.2vh;
+    margin-bottom: 0.2vh;
     text-align: center;
     padding-left: 0.5vw;
-    border-radius: 10px;
+    border-radius: 10vw;
     float: left;
 }
 
-.table__speed,
-.table__stats,
-.table__ivs {
-    width: 5vw;
+td {
+    padding-right: 1vw;
+}
+
+.table__stats {
+    text-align: right;
 }
 
 .table__modifier-speed-up {
@@ -90,11 +94,11 @@ table tr:nth-child(even) {
 }
 
 .table__modifier-ability {
-    background-color: #D8A;
+    background-color: rgb(215, 170, 188);
 }
 
 .table__modifier-field {
-    background-color: rgb(137, 160, 218);
+    background-color: rgb(161, 177, 216);
 }
 
 .table__cell__modifier--filler {

@@ -3908,8 +3908,8 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
         drawMonsterRow() {
             let tr = document.createElement("tr");
             tr.className = "table__row";
-            this.drawName(tr);
             this.drawSpeed(tr);
+            this.drawName(tr);
             this.drawStats(tr);
             this.drawIVs(tr);
             this.drawModifiers(tr);
@@ -3930,7 +3930,7 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
         drawStats(tr) {
             let cell = document.createElement("td");
             cell.className = "table__cell table__stats";
-            cell.innerText = "" + this.speedEV + this.nature.name;
+            cell.innerText = this.nature.name + this.speedEV;
             tr.appendChild(cell);
         }
         drawIVs(tr) {
@@ -3961,16 +3961,16 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
                     className: "table__modifier-ability",
                 });
             }
-            if (this.item != Item.None) {
-                modifiers.push({
-                    name: this.item.name,
-                    className: "table__modifier-item",
-                });
-            }
             if (this.field != Field.None) {
                 modifiers.push({
                     name: this.field.name,
                     className: "table__modifier-field",
+                });
+            }
+            if (this.item != Item.None) {
+                modifiers.push({
+                    name: this.item.name,
+                    className: "table__modifier-item",
                 });
             }
             if (modifiers.length == 0) {
@@ -3981,10 +3981,10 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
             }
             else {
                 modifiers.forEach(modifier => {
-                    let div = document.createElement("div");
-                    div.className = "table__cell__modifier " + modifier.className;
-                    div.innerText = modifier.name;
-                    td.appendChild(div);
+                    let element = document.createElement("div");
+                    element.className = "table__cell__modifier " + modifier.className;
+                    element.innerText = modifier.name;
+                    td.appendChild(element);
                 });
             }
             tr.appendChild(td);
@@ -4000,11 +4000,11 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
         return stages[stage + 6];
     }
     function effectiveSpeed(monster) {
-        return Math.floor(((2 * monster.entry.speed + monster.speedIV + monster.speedEV / 4) * level / 100 + 5) * monster.nature.speedModifier)
+        return Math.floor(Math.floor(((2 * monster.entry.speed + monster.speedIV + monster.speedEV / 4) * level / 100 + 5) * monster.nature.speedModifier)
             * monster.item.speedModifier
             * monster.ability.speedModifier
             * monster.field.speedModifier
-            * speedStageModifier(monster.speedStage);
+            * speedStageModifier(monster.speedStage));
     }
     function defaultMonsterFactory(monsters, entry, filter) {
         if (filter.includeIronBall) {
@@ -4077,7 +4077,7 @@ define("lib/dom", ["require", "exports"], function (require, exports) {
     exports.drawTable = drawTable;
     let table;
     let headerRow;
-    const cols = ["Name", "Speed", "Stats", "IV", "Modifier"];
+    const cols = ["Speed", "Name", "Stats", "IV", "Modifier"];
     function drawTable(monsters) {
         let e = document.getElementById("table");
         if (table != null) {
