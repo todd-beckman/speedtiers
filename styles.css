@@ -20,7 +20,7 @@ input[type=checkbox]+label>.filterbutton {
 }
 
 input[type=checkbox]:checked+label>.filterbutton {
-    background-color: #68D;
+    background-color: rgb(137, 160, 218);
 }
 
 #config {
@@ -94,7 +94,7 @@ table tr:nth-child(even) {
 }
 
 .table__modifier-field {
-    background-color: #68D;
+    background-color: rgb(137, 160, 218);
 }
 
 .table__cell__modifier--filler {
