@@ -63,8 +63,7 @@ table tr:nth-child(even) {
 }
 
 .table__cell__modifier {
-    width: 20vw;
-    max-width: 100px;
+    min-width: 20vw;
     margin-top: 0.2vh;
     margin-bottom: 0.2vh;
     text-align: center;
@@ -77,6 +76,7 @@ td {
     padding-right: 1vw;
 }
 
+.table__speed,
 .table__stats {
     text-align: right;
 }
