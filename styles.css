@@ -51,7 +51,6 @@ table {
 
 #table {
     float: none;
-    overflow: scroll;
 }
 
 table tr:nth-child(odd) {
@@ -63,11 +62,11 @@ table tr:nth-child(even) {
 }
 
 .table__cell__modifier {
-    min-width: 20vw;
     margin-top: 0.2vh;
     margin-bottom: 0.2vh;
     text-align: center;
-    padding-left: 0.5vw;
+    padding-left: 1vw;
+    padding-right: 1vw;
     border-radius: 10vw;
     float: left;
 }
