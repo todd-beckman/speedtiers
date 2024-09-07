@@ -6,6 +6,11 @@ body {
     height: 100%;
 }
 
+
+table tr:nth-child(odd) {
+    background-color: #CCC;
+}
+
 .table__cell__modifier {
     padding-left: 5px;
     padding-right: 5px;

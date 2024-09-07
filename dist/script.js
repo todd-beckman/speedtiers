@@ -3998,16 +3998,15 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
             * monster.field.speedModifier
             * speedStageModifier(monster.speedStage);
     }
-    function defaultMonsterFactory(entry, filter) {
-        let monsters = new Array();
+    function defaultMonsterFactory(monsters, entry, filter) {
         if (filter.includeIronBall) {
             monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall));
         }
         monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental));
-        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0));
-        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Neutral));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Neutral));
         monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Beneficial));
-        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral));
         monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial));
         if (filter.includeTailwind) {
             monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.Tailwind));
@@ -4041,11 +4040,8 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
                     if (filter.includeIronBall) {
                         monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall, gotAbility));
                     }
-                    if (filter.includeTailwind) {
-                        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
-                        if (filter.includeChoiceScarf) {
-                            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility));
-                        }
+                    if (filter.includeTailwind && filter.includeChoiceScarf) {
+                        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility));
                     }
                     if (filter.includeChoiceScarf) {
                         monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf, gotAbility));
@@ -4053,7 +4049,6 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
                 }
             });
         }
-        return monsters;
     }
     function allRegulationFactory(regulation, filter) {
         let allMonsters = new Array();
@@ -4063,8 +4058,7 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
                     return;
                 }
             }
-            let monsters = defaultMonsterFactory(entry, filter);
-            monsters.forEach(monster => allMonsters.push(monster));
+            defaultMonsterFactory(allMonsters, entry, filter);
         });
         allMonsters.sort((a, b) => {
             return effectiveSpeed(b) - effectiveSpeed(a);
@@ -4072,7 +4066,7 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
         return allMonsters;
     }
 });
-define("lib/dom", ["require", "exports", "lib/data"], function (require, exports, data_1) {
+define("lib/dom", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.drawTable = drawTable;
@@ -4109,50 +4103,8 @@ define("lib/dom", ["require", "exports", "lib/data"], function (require, exports
             table.appendChild(monster.tableRow);
         });
     }
-    function drawModifiers(tr, monster) {
-        let td = document.createElement("td");
-        td.className = "table__cell table__modifiers";
-        let modifiers = new Array();
-        if (monster.speedStage < 0) {
-            modifiers.push({
-                name: "" + monster.speedStage,
-                className: "table__modifier-speed-down",
-            });
-        }
-        else if (monster.speedStage > 0) {
-            modifiers.push({
-                name: "+" + monster.speedStage,
-                className: "table__modifier-speed-up",
-            });
-        }
-        if (monster.ability != data_1.Ability.None) {
-            modifiers.push({
-                name: monster.ability.name,
-                className: "table__modifier-ability",
-            });
-        }
-        if (monster.item != data_1.Item.None) {
-            modifiers.push({
-                name: monster.item.name,
-                className: "table__modifier-item",
-            });
-        }
-        if (monster.field != data_1.Field.None) {
-            modifiers.push({
-                name: monster.field.name,
-                className: "table__modifier-field",
-            });
-        }
-        modifiers.forEach(modifier => {
-            let span = document.createElement("span");
-            span.className = "table__cell__modifier " + modifier.className;
-            span.innerText = modifier.name;
-            td.appendChild(span);
-        });
-        tr.appendChild(td);
-    }
 });
-define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data"], function (require, exports, dom_1, regulation_h_2, data_2) {
+define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data"], function (require, exports, dom_1, regulation_h_2, data_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     document.getElementById("config").onsubmit = submit;
@@ -4169,7 +4121,7 @@ define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data
             includeTailwind: document.getElementById("tailwind").checked,
             includeAbility: document.getElementById("ability").checked,
         };
-        let monsters = (0, data_2.allRegulationFactory)(regulation, filter);
+        let monsters = (0, data_1.allRegulationFactory)(regulation, filter);
         (0, dom_1.drawTable)(monsters);
     }
     updateTable();

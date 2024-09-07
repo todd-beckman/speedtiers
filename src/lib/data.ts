@@ -272,17 +272,15 @@ export function effectiveSpeed(monster: Monster): number {
         * speedStageModifier(monster.speedStage)
 }
 
-export function defaultMonsterFactory(entry: PokedexEntry, filter: Filter): Array<Monster> {
-    let monsters = new Array<Monster>()
-
+export function defaultMonsterFactory(monsters: Array<Monster>, entry: PokedexEntry, filter: Filter): void {
     if (filter.includeIronBall) {
         monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall))
     }
     monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental))
-    monsters.push(new Monster(REGULATION_H, entry, 0, 0))
-    monsters.push(new Monster(REGULATION_H, entry, 0, maxIV))
+    monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Neutral))
+    monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Neutral))
     monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Beneficial))
-    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV))
+    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral))
     monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial))
     if (filter.includeTailwind) {
         monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.Tailwind))
@@ -317,11 +315,8 @@ export function defaultMonsterFactory(entry: PokedexEntry, filter: Filter): Arra
                 if (filter.includeIronBall) {
                     monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall, gotAbility))
                 }
-                if (filter.includeTailwind) {
-                    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
-                    if (filter.includeChoiceScarf) {
-                        monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility))
-                    }
+                if (filter.includeTailwind && filter.includeChoiceScarf) {
+                    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility))
                 }
                 if (filter.includeChoiceScarf) {
                     monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf, gotAbility))
@@ -329,7 +324,6 @@ export function defaultMonsterFactory(entry: PokedexEntry, filter: Filter): Arra
             }
         })
     }
-    return monsters
 }
 
 export interface Filter {
@@ -352,8 +346,7 @@ export function allRegulationFactory(regulation: Regulation, filter: Filter): Ar
         }
 
         //todo this is slow, figure out why concat wasn't working
-        let monsters = defaultMonsterFactory(entry, filter)
-        monsters.forEach(monster => allMonsters.push(monster))
+        defaultMonsterFactory(allMonsters, entry, filter)
     })
 
     allMonsters.sort((a: Monster, b: Monster) => {
