@@ -1,5 +1,7 @@
 import { Regulation } from "./data"
 
+export const REGULATION_H = "sv_h"
+
 export const RegulationH: Regulation = {
     entries: [
         {

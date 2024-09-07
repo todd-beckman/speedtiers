@@ -1,287 +1,8 @@
-define("lib/data", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Monster = exports.Ability = exports.Field = exports.Item = exports.Nature = void 0;
-    exports.effectiveSpeed = effectiveSpeed;
-    exports.defaultMonsterFactory = defaultMonsterFactory;
-    exports.allRegulationFactory = allRegulationFactory;
-    const level = 50;
-    const maxIV = 31;
-    const maxEV = 252;
-    class Nature {
-        constructor(name, speedModifier) {
-            this.name = name;
-            this.speedModifier = speedModifier;
-        }
-    }
-    exports.Nature = Nature;
-    Nature.Neutral = new Nature("", 1.0);
-    Nature.Beneficial = new Nature("+", 1.1);
-    Nature.Detrimental = new Nature("-", 0.9);
-    class Item {
-        constructor(name, speedModifier) {
-            this.name = name;
-            this.speedModifier = speedModifier;
-        }
-    }
-    exports.Item = Item;
-    Item.None = new Item("", 1.0);
-    Item.ChoiceScarf = new Item("Choice Scarf", 1.5);
-    Item.IronBall = new Item("Iron Ball", 0.5);
-    class Field {
-        constructor(name, speedModifier) {
-            this.name = name;
-            this.speedModifier = speedModifier;
-        }
-    }
-    exports.Field = Field;
-    Field.None = new Field("", 1.0);
-    Field.Tailwind = new Field("Tailwind", 2.0);
-    class Ability {
-        constructor(name, speedModifier) {
-            this.name = name;
-            this.speedModifier = speedModifier;
-        }
-        static from(ability) {
-            switch (ability) {
-                case "None": return this.None;
-                case "Chlorophyll": return this.Chlorophyll;
-                case "Surge Surfer": return this.SurgeSurfer;
-                case "Sand Rush": return this.SandRush;
-                case "Slush Rush": return this.SlushRush;
-                case "Swift Swim": return this.SwiftSwim;
-                case "Unburden": return this.Unburden;
-                case "Protosynthesis": return this.Protosynthesis;
-                case "Quark Drive": return this.QuarkDrive;
-                case "Orichalcum Pulse": return this.OrichalcumPulse;
-                case "Hadron Engine": return this.HadronEngine;
-            }
-        }
-    }
-    exports.Ability = Ability;
-    Ability.None = new Ability("", 1.0);
-    Ability.Chlorophyll = new Ability("Chlorophyll", 2.0);
-    Ability.SurgeSurfer = new Ability("Surge Surfer", 2.0);
-    Ability.SandRush = new Ability("Sand Rush", 2.0);
-    Ability.SlushRush = new Ability("Slush Rush", 2.0);
-    Ability.SwiftSwim = new Ability("Swift Swim", 2.0);
-    Ability.Unburden = new Ability("Unburden", 2.0);
-    Ability.Protosynthesis = new Ability("Protosynthesis", 1.5);
-    Ability.QuarkDrive = new Ability("Quark Drive", 1.5);
-    Ability.OrichalcumPulse = new Ability("Orichalcum Pulse", 1.5);
-    Ability.HadronEngine = new Ability("Hadron Engine", 1.5);
-    class Monster {
-        constructor(entry, speedEV = 0, speedIV = 0, nature = Nature.Neutral, field = Field.None, item = Item.None, ability = Ability.None, speedStage = 0) {
-            this.entry = entry;
-            this.speedEV = speedEV;
-            this.speedIV = speedIV;
-            this.speedStage = speedStage;
-            this.nature = nature;
-            this.field = field;
-            this.item = item;
-            this.ability = ability;
-        }
-    }
-    exports.Monster = Monster;
-    const stages = [
-        2 / 8, 2 / 7, 2 / 6, 2 / 5, 2 / 4, 2 / 3,
-        2 / 2,
-        3 / 2, 4 / 2, 5 / 2, 6 / 2, 7 / 2, 8 / 2,
-    ];
-    function speedStageModifier(stage) {
-        return stages[stage + 6];
-    }
-    function effectiveSpeed(monster) {
-        return Math.floor(((2 * monster.entry.speed + monster.speedIV + monster.speedEV / 4) * level / 100 + 5) * monster.nature.speedModifier)
-            * monster.item.speedModifier
-            * monster.ability.speedModifier
-            * monster.field.speedModifier
-            * speedStageModifier(monster.speedStage);
-    }
-    function defaultMonsterFactory(entry, filter) {
-        let monsters = new Array();
-        if (filter.includeIronBall) {
-            monsters.push(new Monster(entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall));
-        }
-        monsters.push(new Monster(entry, 0, 0, Nature.Detrimental));
-        monsters.push(new Monster(entry, 0, 0));
-        monsters.push(new Monster(entry, 0, maxIV));
-        monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial));
-        monsters.push(new Monster(entry, maxEV, maxIV));
-        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial));
-        if (filter.includeTailwind) {
-            monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial, Field.Tailwind));
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind));
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind));
-            if (filter.includeChoiceScarf) {
-                monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.ChoiceScarf));
-                monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf));
-            }
-        }
-        if (filter.includeChoiceScarf) {
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf));
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.ChoiceScarf));
-        }
-        if (entry.abilities != null && filter.includeAbility) {
-            entry.abilities.forEach(ability => {
-                let gotAbility = Ability.from(ability);
-                monsters.push(new Monster(entry, 0, 0, Nature.Detrimental, Field.None, Item.None, gotAbility));
-                monsters.push(new Monster(entry, 0, 0, Nature.Neutral, Field.None, Item.None, gotAbility));
-                monsters.push(new Monster(entry, 0, 0, Nature.Beneficial, Field.None, Item.None, gotAbility));
-                monsters.push(new Monster(entry, 0, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility));
-                monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility));
-                monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility));
-                monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility));
-                if (filter.includeTailwind) {
-                    monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
-                    monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.None, gotAbility));
-                    monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
-                }
-                if (gotAbility != Ability.Unburden) {
-                    if (filter.includeIronBall) {
-                        monsters.push(new Monster(entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall, gotAbility));
-                    }
-                    if (filter.includeTailwind) {
-                        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
-                        if (filter.includeChoiceScarf) {
-                            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility));
-                        }
-                    }
-                    if (filter.includeChoiceScarf) {
-                        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf, gotAbility));
-                    }
-                }
-            });
-        }
-        return monsters;
-    }
-    function allRegulationFactory(regulation, filter) {
-        let allMonsters = new Array();
-        regulation.entries.forEach(entry => {
-            let monsters = defaultMonsterFactory(entry, filter);
-            monsters.forEach(monster => allMonsters.push(monster));
-        });
-        allMonsters.sort((a, b) => {
-            return effectiveSpeed(b) - effectiveSpeed(a);
-        });
-        return allMonsters;
-    }
-});
-define("lib/dom", ["require", "exports", "lib/data"], function (require, exports, data_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.drawTable = drawTable;
-    let table;
-    let headerRow;
-    const cols = ["Name", "Speed", "Stats", "IV", "Modifier"];
-    function drawTable(monsters) {
-        let e = document.getElementById("table");
-        if (table != null) {
-            e.removeChild(table);
-            table = null;
-        }
-        table = document.createElement("table");
-        table.className = "table__table";
-        drawHeaderRow(table);
-        drawMonsterRows(table, monsters);
-        e.appendChild(table);
-    }
-    function drawHeaderRow(table) {
-        if (headerRow == null) {
-            headerRow = document.createElement("tr");
-            headerRow.className = "table__header-row table__row";
-            cols.forEach((col) => {
-                let td = document.createElement("td");
-                td.className = "table__header-cell";
-                td.innerText = col;
-                headerRow.appendChild(td);
-            });
-        }
-        table.appendChild(headerRow);
-    }
-    function drawMonsterRows(table, monsters) {
-        monsters.forEach(monster => {
-            let tr = document.createElement("tr");
-            tr.className = "table__row";
-            drawName(tr, monster);
-            drawSpeed(tr, monster);
-            drawStats(tr, monster);
-            drawIVs(tr, monster);
-            drawModifiers(tr, monster);
-            table.appendChild(tr);
-        });
-    }
-    function drawName(tr, monster) {
-        let cell = document.createElement("td");
-        cell.className = "table__cell table__name";
-        cell.innerText = monster.entry.name;
-        tr.appendChild(cell);
-    }
-    function drawSpeed(tr, monster) {
-        let cell = document.createElement("td");
-        cell.className = "table__cell table__speed";
-        cell.innerText = "" + (0, data_1.effectiveSpeed)(monster);
-        tr.appendChild(cell);
-    }
-    function drawStats(tr, monster) {
-        let cell = document.createElement("td");
-        cell.className = "table__cell table__stats";
-        cell.innerText = "" + monster.speedEV + monster.nature.name;
-        tr.appendChild(cell);
-    }
-    function drawIVs(tr, monster) {
-        let cell = document.createElement("td");
-        cell.className = "table__cell table__ivs";
-        cell.innerText = "" + monster.speedIV;
-        tr.appendChild(cell);
-    }
-    function drawModifiers(tr, monster) {
-        let td = document.createElement("td");
-        td.className = "table__cell table__modifiers";
-        let modifiers = new Array();
-        if (monster.speedStage < 0) {
-            modifiers.push({
-                name: "" + monster.speedStage,
-                className: "table__modifier-speed-down",
-            });
-        }
-        else if (monster.speedStage > 0) {
-            modifiers.push({
-                name: "+" + monster.speedStage,
-                className: "table__modifier-speed-up",
-            });
-        }
-        if (monster.ability != data_1.Ability.None) {
-            modifiers.push({
-                name: monster.ability.name,
-                className: "table__modifier-ability",
-            });
-        }
-        if (monster.item != data_1.Item.None) {
-            modifiers.push({
-                name: monster.item.name,
-                className: "table__modifier-item",
-            });
-        }
-        if (monster.field != data_1.Field.None) {
-            modifiers.push({
-                name: monster.field.name,
-                className: "table__modifier-field",
-            });
-        }
-        modifiers.forEach(modifier => {
-            let span = document.createElement("span");
-            span.className = "table__cell__modifier " + modifier.className;
-            span.innerText = modifier.name;
-            td.appendChild(span);
-        });
-        tr.appendChild(td);
-    }
-});
 define("lib/regulation_h", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.RegulationH = void 0;
+    exports.RegulationH = exports.REGULATION_H = void 0;
+    exports.REGULATION_H = "sv_h";
     exports.RegulationH = {
         entries: [
             {
@@ -3984,7 +3705,347 @@ define("lib/regulation_h", ["require", "exports"], function (require, exports) {
         ]
     };
 });
-define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data"], function (require, exports, dom_1, regulation_h_1, data_2) {
+define("lib/data", ["require", "exports", "lib/regulation_h"], function (require, exports, regulation_h_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Monster = exports.Ability = exports.Field = exports.Item = exports.Nature = void 0;
+    exports.effectiveSpeed = effectiveSpeed;
+    exports.defaultMonsterFactory = defaultMonsterFactory;
+    exports.allRegulationFactory = allRegulationFactory;
+    const level = 50;
+    const maxIV = 31;
+    const maxEV = 252;
+    class Nature {
+        constructor(name, speedModifier) {
+            this.name = name;
+            this.speedModifier = speedModifier;
+        }
+    }
+    exports.Nature = Nature;
+    Nature.Neutral = new Nature("", 1.0);
+    Nature.Beneficial = new Nature("+", 1.1);
+    Nature.Detrimental = new Nature("-", 0.9);
+    class Item {
+        constructor(name, speedModifier) {
+            this.name = name;
+            this.speedModifier = speedModifier;
+        }
+    }
+    exports.Item = Item;
+    Item.None = new Item("", 1.0);
+    Item.ChoiceScarf = new Item("Choice Scarf", 1.5);
+    Item.IronBall = new Item("Iron Ball", 0.5);
+    class Field {
+        constructor(name, speedModifier) {
+            this.name = name;
+            this.speedModifier = speedModifier;
+        }
+    }
+    exports.Field = Field;
+    Field.None = new Field("", 1.0);
+    Field.Tailwind = new Field("Tailwind", 2.0);
+    class Ability {
+        constructor(name, speedModifier) {
+            this.name = name;
+            this.speedModifier = speedModifier;
+        }
+        static from(ability) {
+            switch (ability) {
+                case "None": return this.None;
+                case "Chlorophyll": return this.Chlorophyll;
+                case "Surge Surfer": return this.SurgeSurfer;
+                case "Sand Rush": return this.SandRush;
+                case "Slush Rush": return this.SlushRush;
+                case "Swift Swim": return this.SwiftSwim;
+                case "Unburden": return this.Unburden;
+                case "Protosynthesis": return this.Protosynthesis;
+                case "Quark Drive": return this.QuarkDrive;
+                case "Orichalcum Pulse": return this.OrichalcumPulse;
+                case "Hadron Engine": return this.HadronEngine;
+            }
+        }
+    }
+    exports.Ability = Ability;
+    Ability.None = new Ability("", 1.0);
+    Ability.Chlorophyll = new Ability("Chlorophyll", 2.0);
+    Ability.SurgeSurfer = new Ability("Surge Surfer", 2.0);
+    Ability.SandRush = new Ability("Sand Rush", 2.0);
+    Ability.SlushRush = new Ability("Slush Rush", 2.0);
+    Ability.SwiftSwim = new Ability("Swift Swim", 2.0);
+    Ability.Unburden = new Ability("Unburden", 2.0);
+    Ability.Protosynthesis = new Ability("Protosynthesis", 1.5);
+    Ability.QuarkDrive = new Ability("Quark Drive", 1.5);
+    Ability.OrichalcumPulse = new Ability("Orichalcum Pulse", 1.5);
+    Ability.HadronEngine = new Ability("Hadron Engine", 1.5);
+    class Monster {
+        constructor(regulation, entry, speedEV = 0, speedIV = 0, nature = Nature.Neutral, field = Field.None, item = Item.None, ability = Ability.None, speedStage = 0) {
+            this.regulation = regulation;
+            this.entry = entry;
+            this.speedEV = speedEV;
+            this.speedIV = speedIV;
+            this.speedStage = speedStage;
+            this.nature = nature;
+            this.field = field;
+            this.item = item;
+            this.ability = ability;
+            this.hashID = this.generateHashID;
+            this.tableRow = this.drawMonsterRow();
+        }
+        get generateHashID() {
+            return JSON.stringify({
+                regulation: this.regulation,
+                mon: this.entry.name,
+                speed: this.speedEV,
+                speedStage: this.speedStage,
+                nature: this.nature,
+                field: this.field,
+                item: this.item,
+                ability: this.ability,
+            });
+        }
+        drawMonsterRow() {
+            let tr = document.createElement("tr");
+            tr.className = "table__row";
+            this.drawName(tr);
+            this.drawSpeed(tr);
+            this.drawStats(tr);
+            this.drawIVs(tr);
+            this.drawModifiers(tr);
+            return tr;
+        }
+        drawName(tr) {
+            let cell = document.createElement("td");
+            cell.className = "table__cell table__name";
+            cell.innerText = this.entry.name;
+            tr.appendChild(cell);
+        }
+        drawSpeed(tr) {
+            let cell = document.createElement("td");
+            cell.className = "table__cell table__speed";
+            cell.innerText = "" + effectiveSpeed(this);
+            tr.appendChild(cell);
+        }
+        drawStats(tr) {
+            let cell = document.createElement("td");
+            cell.className = "table__cell table__stats";
+            cell.innerText = "" + this.speedEV + this.nature.name;
+            tr.appendChild(cell);
+        }
+        drawIVs(tr) {
+            let cell = document.createElement("td");
+            cell.className = "table__cell table__ivs";
+            cell.innerText = "" + this.speedIV;
+            tr.appendChild(cell);
+        }
+        drawModifiers(tr) {
+            let td = document.createElement("td");
+            td.className = "table__cell table__modifiers";
+            let modifiers = new Array();
+            if (this.speedStage < 0) {
+                modifiers.push({
+                    name: "" + this.speedStage,
+                    className: "table__modifier-speed-down",
+                });
+            }
+            else if (this.speedStage > 0) {
+                modifiers.push({
+                    name: "+" + this.speedStage,
+                    className: "table__modifier-speed-up",
+                });
+            }
+            if (this.ability != Ability.None) {
+                modifiers.push({
+                    name: this.ability.name,
+                    className: "table__modifier-ability",
+                });
+            }
+            if (this.item != Item.None) {
+                modifiers.push({
+                    name: this.item.name,
+                    className: "table__modifier-item",
+                });
+            }
+            if (this.field != Field.None) {
+                modifiers.push({
+                    name: this.field.name,
+                    className: "table__modifier-field",
+                });
+            }
+            modifiers.forEach(modifier => {
+                let span = document.createElement("span");
+                span.className = "table__cell__modifier " + modifier.className;
+                span.innerText = modifier.name;
+                td.appendChild(span);
+            });
+            tr.appendChild(td);
+        }
+    }
+    exports.Monster = Monster;
+    const stages = [
+        2 / 8, 2 / 7, 2 / 6, 2 / 5, 2 / 4, 2 / 3,
+        2 / 2,
+        3 / 2, 4 / 2, 5 / 2, 6 / 2, 7 / 2, 8 / 2,
+    ];
+    function speedStageModifier(stage) {
+        return stages[stage + 6];
+    }
+    function effectiveSpeed(monster) {
+        return Math.floor(((2 * monster.entry.speed + monster.speedIV + monster.speedEV / 4) * level / 100 + 5) * monster.nature.speedModifier)
+            * monster.item.speedModifier
+            * monster.ability.speedModifier
+            * monster.field.speedModifier
+            * speedStageModifier(monster.speedStage);
+    }
+    function defaultMonsterFactory(entry, filter) {
+        let monsters = new Array();
+        if (filter.includeIronBall) {
+            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall));
+        }
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Beneficial));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV));
+        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial));
+        if (filter.includeTailwind) {
+            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.Tailwind));
+            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind));
+            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind));
+            if (filter.includeChoiceScarf) {
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.ChoiceScarf));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf));
+            }
+        }
+        if (filter.includeChoiceScarf) {
+            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf));
+            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.ChoiceScarf));
+        }
+        if (entry.abilities != null && filter.includeAbility) {
+            entry.abilities.forEach(ability => {
+                let gotAbility = Ability.from(ability);
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.None, gotAbility));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Neutral, Field.None, Item.None, gotAbility));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Beneficial, Field.None, Item.None, gotAbility));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility));
+                monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility));
+                if (filter.includeTailwind) {
+                    monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
+                    monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.None, gotAbility));
+                    monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
+                }
+                if (gotAbility != Ability.Unburden) {
+                    if (filter.includeIronBall) {
+                        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall, gotAbility));
+                    }
+                    if (filter.includeTailwind) {
+                        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility));
+                        if (filter.includeChoiceScarf) {
+                            monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility));
+                        }
+                    }
+                    if (filter.includeChoiceScarf) {
+                        monsters.push(new Monster(regulation_h_1.REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf, gotAbility));
+                    }
+                }
+            });
+        }
+        return monsters;
+    }
+    function allRegulationFactory(regulation, filter) {
+        let allMonsters = new Array();
+        regulation.entries.forEach(entry => {
+            let monsters = defaultMonsterFactory(entry, filter);
+            monsters.forEach(monster => allMonsters.push(monster));
+        });
+        allMonsters.sort((a, b) => {
+            return effectiveSpeed(b) - effectiveSpeed(a);
+        });
+        return allMonsters;
+    }
+});
+define("lib/dom", ["require", "exports", "lib/data"], function (require, exports, data_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.drawTable = drawTable;
+    let table;
+    let headerRow;
+    const cols = ["Name", "Speed", "Stats", "IV", "Modifier"];
+    function drawTable(monsters) {
+        let e = document.getElementById("table");
+        if (table != null) {
+            e.removeChild(table);
+            table = null;
+        }
+        table = document.createElement("table");
+        table.className = "table__table";
+        drawHeaderRow(table);
+        drawMonsterRows(table, monsters);
+        e.appendChild(table);
+    }
+    function drawHeaderRow(table) {
+        if (headerRow == null) {
+            headerRow = document.createElement("tr");
+            headerRow.className = "table__header-row table__row";
+            cols.forEach((col) => {
+                let td = document.createElement("td");
+                td.className = "table__header-cell";
+                td.innerText = col;
+                headerRow.appendChild(td);
+            });
+        }
+        table.appendChild(headerRow);
+    }
+    function drawMonsterRows(table, monsters) {
+        monsters.forEach(monster => {
+            table.appendChild(monster.tableRow);
+        });
+    }
+    function drawModifiers(tr, monster) {
+        let td = document.createElement("td");
+        td.className = "table__cell table__modifiers";
+        let modifiers = new Array();
+        if (monster.speedStage < 0) {
+            modifiers.push({
+                name: "" + monster.speedStage,
+                className: "table__modifier-speed-down",
+            });
+        }
+        else if (monster.speedStage > 0) {
+            modifiers.push({
+                name: "+" + monster.speedStage,
+                className: "table__modifier-speed-up",
+            });
+        }
+        if (monster.ability != data_1.Ability.None) {
+            modifiers.push({
+                name: monster.ability.name,
+                className: "table__modifier-ability",
+            });
+        }
+        if (monster.item != data_1.Item.None) {
+            modifiers.push({
+                name: monster.item.name,
+                className: "table__modifier-item",
+            });
+        }
+        if (monster.field != data_1.Field.None) {
+            modifiers.push({
+                name: monster.field.name,
+                className: "table__modifier-field",
+            });
+        }
+        modifiers.forEach(modifier => {
+            let span = document.createElement("span");
+            span.className = "table__cell__modifier " + modifier.className;
+            span.innerText = modifier.name;
+            td.appendChild(span);
+        });
+        tr.appendChild(td);
+    }
+});
+define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data"], function (require, exports, dom_1, regulation_h_2, data_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     document.getElementById("config").onsubmit = submit;
@@ -3993,7 +4054,7 @@ define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data
         updateTable();
     }
     function updateTable() {
-        let regulation = regulation_h_1.RegulationH;
+        let regulation = regulation_h_2.RegulationH;
         let filter = {
             includeChoiceScarf: document.getElementById("choicescarf").checked,
             includeIronBall: document.getElementById("choicescarf").checked,

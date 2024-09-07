@@ -37,44 +37,8 @@ function drawHeaderRow(table: HTMLTableElement) {
 
 function drawMonsterRows(table: HTMLTableElement, monsters: Array<Monster>) {
     monsters.forEach(monster => {
-        let tr = document.createElement("tr") as HTMLTableRowElement
-        tr.className = "table__row"
-        drawName(tr, monster)
-        drawSpeed(tr, monster)
-        drawStats(tr, monster)
-        drawIVs(tr, monster)
-        drawModifiers(tr, monster)
-        table.appendChild(tr)
+        table.appendChild(monster.tableRow)
     })
-}
-
-function drawName(tr: HTMLTableRowElement, monster: Monster) {
-    let cell = document.createElement("td") as HTMLTableCellElement
-    cell.className = "table__cell table__name"
-    cell.innerText = monster.entry.name
-    tr.appendChild(cell)
-}
-
-function drawSpeed(tr: HTMLTableRowElement, monster: Monster) {
-    let cell = document.createElement("td") as HTMLTableCellElement
-    cell.className = "table__cell table__speed"
-    cell.innerText = "" + effectiveSpeed(monster)
-    tr.appendChild(cell)
-}
-
-function drawStats(tr: HTMLTableRowElement, monster: Monster) {
-    let cell = document.createElement("td") as HTMLTableCellElement
-    cell.className = "table__cell table__stats"
-    cell.innerText = "" + monster.speedEV + monster.nature.name
-
-    tr.appendChild(cell)
-}
-
-function drawIVs(tr: HTMLTableRowElement, monster: Monster) {
-    let cell = document.createElement("td") as HTMLTableCellElement
-    cell.className = "table__cell table__ivs"
-    cell.innerText = "" + monster.speedIV
-    tr.appendChild(cell)
 }
 
 interface ModifierEntry {

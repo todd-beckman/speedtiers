@@ -1,3 +1,5 @@
+import { REGULATION_H } from "./regulation_h"
+
 // may as well extract this ahead of time
 const level = 50
 const maxIV = 31
@@ -20,6 +22,11 @@ export interface PokedexEntry {
  */
 export interface Regulation {
     entries: Array<PokedexEntry>
+}
+
+interface ModifierEntry {
+    name: string
+    className: string
 }
 
 export class Nature {
@@ -105,6 +112,7 @@ export class Ability {
  * A Monster is an instance of a Species with volatile modifiers available.
  */
 export class Monster {
+    readonly regulation: string
     readonly entry: PokedexEntry
     readonly speedEV: number
     readonly speedIV: number
@@ -113,8 +121,11 @@ export class Monster {
     readonly ability: Ability
     readonly field: Field
     readonly speedStage: number
+    readonly hashID: string
+    readonly tableRow: HTMLTableRowElement
 
     constructor(
+        regulation: string,
         entry: PokedexEntry,
         speedEV: number = 0,
         speedIV: number = 0,
@@ -124,6 +135,7 @@ export class Monster {
         ability: Ability = Ability.None,
         speedStage: number = 0,
     ) {
+        this.regulation = regulation
         this.entry = entry
         this.speedEV = speedEV
         this.speedIV = speedIV
@@ -132,7 +144,108 @@ export class Monster {
         this.field = field
         this.item = item
         this.ability = ability
+        this.hashID = this.generateHashID
+        this.tableRow = this.drawMonsterRow()
     }
+
+    private get generateHashID(): string {
+        return JSON.stringify({
+            regulation: this.regulation,
+            mon: this.entry.name,
+            speed: this.speedEV,
+            speedStage: this.speedStage,
+            nature: this.nature,
+            field: this.field,
+            item: this.item,
+            ability: this.ability,
+        })
+    }
+
+    private drawMonsterRow(): HTMLTableRowElement {
+        let tr = document.createElement("tr") as HTMLTableRowElement
+        tr.className = "table__row"
+        this.drawName(tr)
+        this.drawSpeed(tr)
+        this.drawStats(tr)
+        this.drawIVs(tr)
+        this.drawModifiers(tr)
+        return tr
+    }
+
+    private drawName(tr: HTMLTableRowElement) {
+        let cell = document.createElement("td") as HTMLTableCellElement
+        cell.className = "table__cell table__name"
+        cell.innerText = this.entry.name
+        tr.appendChild(cell)
+    }
+
+    private drawSpeed(tr: HTMLTableRowElement) {
+        let cell = document.createElement("td") as HTMLTableCellElement
+        cell.className = "table__cell table__speed"
+        cell.innerText = "" + effectiveSpeed(this)
+        tr.appendChild(cell)
+    }
+
+    private drawStats(tr: HTMLTableRowElement) {
+        let cell = document.createElement("td") as HTMLTableCellElement
+        cell.className = "table__cell table__stats"
+        cell.innerText = "" + this.speedEV + this.nature.name
+
+        tr.appendChild(cell)
+    }
+
+    private drawIVs(tr: HTMLTableRowElement) {
+        let cell = document.createElement("td") as HTMLTableCellElement
+        cell.className = "table__cell table__ivs"
+        cell.innerText = "" + this.speedIV
+        tr.appendChild(cell)
+    }
+
+    private drawModifiers(tr: HTMLTableRowElement) {
+        let td = document.createElement("td") as HTMLTableCellElement
+        td.className = "table__cell table__modifiers"
+
+        let modifiers = new Array<ModifierEntry>()
+        if (this.speedStage < 0) {
+            modifiers.push({
+                name: "" + this.speedStage,
+                className: "table__modifier-speed-down",
+            })
+        } else if (this.speedStage > 0) {
+            modifiers.push({
+                name: "+" + this.speedStage,
+                className: "table__modifier-speed-up",
+            })
+        }
+        if (this.ability != Ability.None) {
+            modifiers.push({
+                name: this.ability.name,
+                className: "table__modifier-ability",
+            })
+        }
+        if (this.item != Item.None) {
+            modifiers.push({
+                name: this.item.name,
+                className: "table__modifier-item",
+            })
+        }
+        if (this.field != Field.None) {
+            modifiers.push({
+                name: this.field.name,
+                className: "table__modifier-field",
+            })
+        }
+
+        modifiers.forEach(modifier => {
+            let span = document.createElement("span") as HTMLSpanElement
+            span.className = "table__cell__modifier " + modifier.className
+            span.innerText = modifier.name
+            td.appendChild(span)
+        })
+
+        tr.appendChild(td)
+    }
+
 }
 
 
@@ -162,55 +275,55 @@ export function defaultMonsterFactory(entry: PokedexEntry, filter: Filter): Arra
     let monsters = new Array<Monster>()
 
     if (filter.includeIronBall) {
-        monsters.push(new Monster(entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall))
+        monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall))
     }
-    monsters.push(new Monster(entry, 0, 0, Nature.Detrimental))
-    monsters.push(new Monster(entry, 0, 0))
-    monsters.push(new Monster(entry, 0, maxIV))
-    monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial))
-    monsters.push(new Monster(entry, maxEV, maxIV))
-    monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial))
+    monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental))
+    monsters.push(new Monster(REGULATION_H, entry, 0, 0))
+    monsters.push(new Monster(REGULATION_H, entry, 0, maxIV))
+    monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Beneficial))
+    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV))
+    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial))
     if (filter.includeTailwind) {
-        monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial, Field.Tailwind))
-        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind))
-        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind))
+        monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.Tailwind))
+        monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind))
+        monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind))
         if (filter.includeChoiceScarf) {
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.ChoiceScarf))
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf))
+            monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.ChoiceScarf))
+            monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf))
         }
     }
     if (filter.includeChoiceScarf) {
-        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf))
-        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.ChoiceScarf))
+        monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf))
+        monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.ChoiceScarf))
     }
 
     if (entry.abilities != null && filter.includeAbility) {
         entry.abilities.forEach(ability => {
             let gotAbility = Ability.from(ability)
-            monsters.push(new Monster(entry, 0, 0, Nature.Detrimental, Field.None, Item.None, gotAbility))
-            monsters.push(new Monster(entry, 0, 0, Nature.Neutral, Field.None, Item.None, gotAbility))
-            monsters.push(new Monster(entry, 0, 0, Nature.Beneficial, Field.None, Item.None, gotAbility))
-            monsters.push(new Monster(entry, 0, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility))
-            monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility))
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility))
-            monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Neutral, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Beneficial, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.None, gotAbility))
+            monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.None, Item.None, gotAbility))
             if (filter.includeTailwind) {
-                monsters.push(new Monster(entry, 0, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
-                monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.None, gotAbility))
-                monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
+                monsters.push(new Monster(REGULATION_H, entry, 0, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
+                monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.Tailwind, Item.None, gotAbility))
+                monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
             }
             if (gotAbility != Ability.Unburden) {
                 if (filter.includeIronBall) {
-                    monsters.push(new Monster(entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall, gotAbility))
+                    monsters.push(new Monster(REGULATION_H, entry, 0, 0, Nature.Detrimental, Field.None, Item.IronBall, gotAbility))
                 }
                 if (filter.includeTailwind) {
-                    monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
+                    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.None, gotAbility))
                     if (filter.includeChoiceScarf) {
-                        monsters.push(new Monster(entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility))
+                        monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Beneficial, Field.Tailwind, Item.ChoiceScarf, gotAbility))
                     }
                 }
                 if (filter.includeChoiceScarf) {
-                    monsters.push(new Monster(entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf, gotAbility))
+                    monsters.push(new Monster(REGULATION_H, entry, maxEV, maxIV, Nature.Neutral, Field.None, Item.ChoiceScarf, gotAbility))
                 }
             }
         })
