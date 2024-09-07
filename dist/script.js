@@ -3973,12 +3973,20 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
                     className: "table__modifier-field",
                 });
             }
-            modifiers.forEach(modifier => {
-                let span = document.createElement("span");
-                span.className = "table__cell__modifier " + modifier.className;
-                span.innerText = modifier.name;
-                td.appendChild(span);
-            });
+            if (modifiers.length == 0) {
+                let div = document.createElement("div");
+                div.className = "table__cell__modifier table__cell__modifier--filler";
+                div.innerText = "(none)";
+                td.appendChild(div);
+            }
+            else {
+                modifiers.forEach(modifier => {
+                    let div = document.createElement("div");
+                    div.className = "table__cell__modifier " + modifier.className;
+                    div.innerText = modifier.name;
+                    td.appendChild(div);
+                });
+            }
             tr.appendChild(td);
         }
     }
@@ -4060,9 +4068,6 @@ define("lib/data", ["require", "exports", "lib/regulation_h"], function (require
             }
             defaultMonsterFactory(allMonsters, entry, filter);
         });
-        allMonsters.sort((a, b) => {
-            return effectiveSpeed(b) - effectiveSpeed(a);
-        });
         return allMonsters;
     }
 });
@@ -4107,9 +4112,13 @@ define("lib/dom", ["require", "exports"], function (require, exports) {
 define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data"], function (require, exports, dom_1, regulation_h_2, data_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    document.getElementById("config").onsubmit = submit;
-    function submit(e) {
-        e.preventDefault();
+    document.getElementById("top100").onclick = redraw;
+    document.getElementById("choicescarf").onclick = redraw;
+    document.getElementById("ironball").onclick = redraw;
+    document.getElementById("tailwind").onclick = redraw;
+    document.getElementById("ability").onclick = redraw;
+    document.getElementById("ascending").onclick = redraw;
+    function redraw(e) {
         updateTable();
     }
     function updateTable() {
@@ -4120,9 +4129,18 @@ define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data
             includeIronBall: document.getElementById("ironball").checked,
             includeTailwind: document.getElementById("tailwind").checked,
             includeAbility: document.getElementById("ability").checked,
+            ascending: document.getElementById("ascending").checked,
         };
         let monsters = (0, data_1.allRegulationFactory)(regulation, filter);
+        monsters.sort((a, b) => {
+            let cmp = (0, data_1.effectiveSpeed)(a) - (0, data_1.effectiveSpeed)(b);
+            if (filter.ascending) {
+                return cmp;
+            }
+            return -cmp;
+        });
         (0, dom_1.drawTable)(monsters);
+        document.getElementById("ascending-text").innerText = (filter.ascending ? "Ascending" : "Descending");
     }
     updateTable();
 });

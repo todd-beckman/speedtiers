@@ -6,14 +6,64 @@ body {
     height: 100%;
 }
 
+input[type=checkbox] {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    width: 0px;
+    height: 0px;
+}
+
+input[type=checkbox]+label>.filterbutton {
+    background-color: #DDD;
+}
+
+input[type=checkbox]:checked+label>.filterbutton {
+    background-color: #68D;
+}
+
+#config {
+    width: 100%;
+    overflow: hidden;
+}
+
+.filterbutton {
+    width: 125px;
+    text-align: center;
+    vertical-align: middle;
+    margin: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 20px;
+    float: left;
+}
+
+label {
+    height: 100%;
+    width: 100%;
+}
+
+.table {
+    float: right;
+}
 
 table tr:nth-child(odd) {
     background-color: #CCC;
 }
 
 .table__cell__modifier {
+    width: 100px;
+    margin: 5px;
+    text-align: center;
     padding-left: 5px;
-    padding-right: 5px;
+    border-radius: 10px;
+    float: left;
+}
+
+.table__speed,
+.table__stats,
+.table__ivs {
+    width: 40px;
 }
 
 .table__modifier-speed-up {
@@ -34,4 +84,8 @@ table tr:nth-child(odd) {
 
 .table__modifier-field {
     background-color: #68D;
+}
+
+.table__cell__modifier--filler {
+    opacity: 0;
 }

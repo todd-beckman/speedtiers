@@ -5,7 +5,6 @@ This is a work in progress to help identify all possible speed tiers in a format
 ## TODO
 
 * Toggle more conditions 
-* Provide stats
 * Nearby thresholds only
     * All of the current threshold
     * Increase threshold until X met

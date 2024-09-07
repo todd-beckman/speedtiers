@@ -1,14 +1,17 @@
 import { drawTable } from "./lib/dom";
 import { RegulationH } from "./lib/regulation_h";
-import { allRegulationFactory } from "./lib/data";
+import { allRegulationFactory, effectiveSpeed, Monster } from "./lib/data";
 
-document.getElementById("config").onsubmit = submit
+document.getElementById("top100").onclick = redraw
+document.getElementById("choicescarf").onclick = redraw
+document.getElementById("ironball").onclick = redraw
+document.getElementById("tailwind").onclick = redraw
+document.getElementById("ability").onclick = redraw
+document.getElementById("ascending").onclick = redraw
 
-function submit(e: SubmitEvent) {
-    e.preventDefault()
+function redraw(e: MouseEvent) {
     updateTable()
 }
-
 
 function updateTable() {
     let regulation = RegulationH
@@ -19,10 +22,19 @@ function updateTable() {
         includeIronBall: (document.getElementById("ironball") as HTMLInputElement).checked,
         includeTailwind: (document.getElementById("tailwind") as HTMLInputElement).checked,
         includeAbility: (document.getElementById("ability") as HTMLInputElement).checked,
+        ascending: (document.getElementById("ascending") as HTMLInputElement).checked,
     }
 
     let monsters = allRegulationFactory(regulation, filter)
+    monsters.sort((a: Monster, b: Monster) => {
+        let cmp = effectiveSpeed(a) - effectiveSpeed(b)
+        if (filter.ascending) {
+            return cmp
+        }
+        return -cmp
+    })
     drawTable(monsters)
+    document.getElementById("ascending-text").innerText = (filter.ascending ? "Ascending" : "Descending")
 }
 
 updateTable()

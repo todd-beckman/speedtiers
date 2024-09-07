@@ -244,12 +244,19 @@ export class Monster {
             })
         }
 
-        modifiers.forEach(modifier => {
-            let span = document.createElement("span") as HTMLSpanElement
-            span.className = "table__cell__modifier " + modifier.className
-            span.innerText = modifier.name
-            td.appendChild(span)
-        })
+        if (modifiers.length == 0) {
+            let div = document.createElement("div") as HTMLDivElement
+            div.className = "table__cell__modifier table__cell__modifier--filler"
+            div.innerText = "(none)"
+            td.appendChild(div)
+        } else {
+            modifiers.forEach(modifier => {
+                let div = document.createElement("div") as HTMLDivElement
+                div.className = "table__cell__modifier " + modifier.className
+                div.innerText = modifier.name
+                td.appendChild(div)
+            })
+        }
 
         tr.appendChild(td)
     }
@@ -356,10 +363,7 @@ export function allRegulationFactory(regulation: Regulation, filter: Filter): Ar
         defaultMonsterFactory(allMonsters, entry, filter)
     })
 
-    allMonsters.sort((a: Monster, b: Monster) => {
-        // sort descending
-        return effectiveSpeed(b) - effectiveSpeed(a)
-    })
+
     return allMonsters
 }
 

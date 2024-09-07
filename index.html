@@ -9,31 +9,49 @@
 
 <body>
     <div id="header">
-        <form id="config">
-            <label for="top100">Top 100</label>
+        <div id="config">
             <input type="checkbox" id="top100" checked=true></input>
-            <br />
+            <label for="top100">
+                <div class="filterbutton"> Top 100 </div>
+            </label>
 
-            <label for="Choice Scarf">Choice Scarf</label>
             <input type="checkbox" id="choicescarf"></input>
-            <br />
+            <label for="choicescarf">
+                <div class="filterbutton">
+                    Choice Scarf
+                </div>
+            </label>
 
-            <label for="tailwind">Tailwind</label>
             <input type="checkbox" id="tailwind" checked=true></input>
-            <br />
+            <label for="tailwind">
+                <div class="filterbutton">
+                    Tailwind
+                </div>
+            </label>
 
-            <label for="ability">Ability</label>
             <input type="checkbox" id="ability" checked=true></input>
-            <br />
+            <label for="ability">
+                <div class="filterbutton">
+                    Ability
+                </div>
+            </label>
 
-            <label for="Iron Ball">Iron Ball</label>
             <input type="checkbox" id="ironball"></input>
-            <br />
+            <label for="ironball">
+                <div class="filterbutton">
+                    Iron Ball
+                </div>
+            </label>
 
-            <button type="submit">Refresh</button>
-            <br />
-        </form>
+            <input type="checkbox" id="ascending"></input>
+            <label for="ascending">
+                <div class="filterbutton" id="ascending-text">
+                    Ascending
+                </div>
+            </label>
+        </div>
     </div>
+    <br />
     <div id="table"></div>
     <script data-main="dist/script" src="require.js"></script>
 </body>
