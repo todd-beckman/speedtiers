@@ -6,7 +6,7 @@ const maxIV = 31
 const maxEV = 252
 
 /**
- * PokedexEntry describes specific pokemon's innate properties.
+ * PokedexEntry describes specific Pokemon's innate properties.
  */
 export interface PokedexEntry {
     id: number
@@ -16,13 +16,20 @@ export interface PokedexEntry {
 }
 
 /**
+ * Whitelist of special filters for a Regulation.
+ */
+export interface RegulationWhitelistEntry {
+    [key: string]: any
+}
+
+/**
  * Describes all Species that are legal in a format.
  * 
- * Each legal form of a species has its own entry, even if they are functionally the same.
+ * Each legal form of a Species has its own entry, even if they are functionally the same.
  */
 export interface Regulation {
     entries: Array<PokedexEntry>
-    top100: any
+    top100: RegulationWhitelistEntry
 }
 
 interface ModifierEntry {

@@ -16,7 +16,7 @@ function updateTable() {
     let filter = {
         includeTop100: (document.getElementById("top100") as HTMLInputElement).checked,
         includeChoiceScarf: (document.getElementById("choicescarf") as HTMLInputElement).checked,
-        includeIronBall: (document.getElementById("choicescarf") as HTMLInputElement).checked,
+        includeIronBall: (document.getElementById("ironball") as HTMLInputElement).checked,
         includeTailwind: (document.getElementById("tailwind") as HTMLInputElement).checked,
         includeAbility: (document.getElementById("ability") as HTMLInputElement).checked,
     }

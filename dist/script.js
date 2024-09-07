@@ -4117,7 +4117,7 @@ define("script", ["require", "exports", "lib/dom", "lib/regulation_h", "lib/data
         let filter = {
             includeTop100: document.getElementById("top100").checked,
             includeChoiceScarf: document.getElementById("choicescarf").checked,
-            includeIronBall: document.getElementById("choicescarf").checked,
+            includeIronBall: document.getElementById("ironball").checked,
             includeTailwind: document.getElementById("tailwind").checked,
             includeAbility: document.getElementById("ability").checked,
         };
