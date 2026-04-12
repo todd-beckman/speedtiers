@@ -1,7 +1,9 @@
 export interface Pokemon {
-  name: string;
+  id: string;        // lowercase canonical name (e.g., "garchomp", "mega venusaur")
+  name: string;      // display name (e.g., "Garchomp", "Mega Venusaur")
   spe: number;
   ability?: Ability | Ability[];
+  baseSpecies?: string; // lowercase canonical of base form (e.g., "venusaur" for "mega venusaur")
 }
 
 export type Nature = 'hindering' | 'neutral' | 'beneficial';

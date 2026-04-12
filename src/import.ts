@@ -1,5 +1,6 @@
 import { Nature, Ability, Modifiers } from './types';
 import { pokemonList } from './pokemon';
+import { createDefaultModifiers } from './state';
 
 const SPEED_BENEFICIAL_NATURES = new Set([
     'Jolly', 'Timid', 'Hasty', 'Naive',
@@ -125,7 +126,7 @@ export function importTeam(text: string, isMainline: boolean): ImportResult {
     for (const mon of parsed.slice(0, 6)) {
         // Find Pokemon in our roster
         const pokemon = pokemonList.find(p =>
-            p.name.toLowerCase() === mon.name.toLowerCase()
+            p.id === mon.name.toLowerCase()
         );
         if (!pokemon) continue;
 
@@ -148,13 +149,7 @@ export function importTeam(text: string, isMainline: boolean): ImportResult {
             item: mon.item,
             stats,
             nature: mon.nature,
-            modifiers: {
-                stage: 0,
-                paralysis: false,
-                choiceScarf: false,
-                tailwind: false,
-                ability: mon.ability,
-            },
+            modifiers: { ...createDefaultModifiers(), ability: mon.ability },
         });
     }
 

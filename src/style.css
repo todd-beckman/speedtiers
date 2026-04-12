@@ -44,7 +44,7 @@ h1 {
     border-radius: 4px;
     padding: 4px 8px;
     font-size: 0.875rem;
-    width: 140px;
+    width: 280px;
 }
 
 .controls input[type="text"]:focus {
@@ -77,6 +77,11 @@ h1 {
     font-weight: bold;
     font-size: 0.875rem;
     color: #aaa;
+}
+
+.compare-error {
+    color: #cc4444;
+    font-size: 0.8rem;
 }
 
 .controls-main {
@@ -127,7 +132,7 @@ h1 {
 }
 
 .pokemon-cell {
-    text-align: right;
+    text-align: left;
     font-family: monospace;
 }
 
@@ -179,6 +184,7 @@ h1 {
 }
 
 .team-cell {
+    text-align: right;
     font-family: monospace;
 }
 
