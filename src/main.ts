@@ -14,6 +14,14 @@ export function renderTableOnly(): void {
     if (showTeam) {
         teamPanelContainer.replaceChildren(buildTeamPanel());
     }
+}
+
+export function renderAll(): void {
+    saveTeam();
+    tableContainer.replaceChildren(renderTable());
+    if (showTeam) {
+        teamPanelContainer.replaceChildren(buildTeamPanel());
+    }
     mainControlsContainer.replaceChildren(buildGlobalControls(), buildMainControls());
 }
 

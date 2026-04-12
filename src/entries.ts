@@ -78,8 +78,8 @@ export function generateEntries(modifiers: Modifiers): SpeedEntry[] {
     const scarfMods: Modifiers = { ...modifiers, choiceScarf: true };
 
     for (const mon of pokemonList) {
-        // Skip same-speed forms (they exist only for sprite mapping / import matching)
-        if (mon.baseSpecies) {
+        // Skip same-speed forms unless compare filter is active
+        if (!compareFilter.trim() && mon.baseSpecies) {
             const base = pokemonList.find(p => p.id === mon.baseSpecies);
             if (base && base.spe === mon.spe) continue;
         }
