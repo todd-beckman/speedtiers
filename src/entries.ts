@@ -61,6 +61,9 @@ const BASE_CONFIGS: { stats: number; nature: Nature }[] = [
     { stats: 0, nature: 'hindering' },
 ];
 
+// Precompute base species lookup
+const pokemonById = new Map(pokemonList.map(p => [p.id, p]));
+
 export function generateEntries(modifiers: Modifiers): SpeedEntry[] {
     const entries: SpeedEntry[] = [];
     const speedCache = new Map<string, number>();
@@ -76,11 +79,12 @@ export function generateEntries(modifiers: Modifiers): SpeedEntry[] {
     }
 
     const scarfMods: Modifiers = { ...modifiers, choiceScarf: true };
+    const skipSameSpeed = !compareFilter.trim();
 
     for (const mon of pokemonList) {
         // Skip same-speed forms unless compare filter is active
-        if (!compareFilter.trim() && mon.baseSpecies) {
-            const base = pokemonList.find(p => p.id === mon.baseSpecies);
+        if (skipSameSpeed && mon.baseSpecies) {
+            const base = pokemonById.get(mon.baseSpecies);
             if (base && base.spe === mon.spe) continue;
         }
 
