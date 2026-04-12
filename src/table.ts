@@ -80,9 +80,9 @@ export function renderTable(): HTMLElement {
                     const hideBtn = document.createElement('button');
                     hideBtn.className = 'hide-btn';
                     hideBtn.textContent = '\u00d7';
-                    hideBtn.title = `Hide ${group.pokemonName}`;
+                    hideBtn.title = `Hide ${group.hideName}`;
                     hideBtn.addEventListener('click', () => {
-                        hiddenPokemon.add(group.pokemonName);
+                        hiddenPokemon.add(group.hideName);
                         render();
                     });
                     span.appendChild(hideBtn);

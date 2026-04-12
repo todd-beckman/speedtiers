@@ -320,8 +320,10 @@ export function generateTeamEntries(): TeamEntry[] {
             }
         }
 
-        // Base entry
-        addTeamEntry(entries, member, member.pokemon.spe);
+        // Base entry (ensure choiceScarf is off — scarf is handled via item)
+        const baseMods = { ...member.modifiers, choiceScarf: false };
+        const baseMember: TeamMember = { ...member, modifiers: baseMods };
+        addTeamEntry(entries, baseMember, member.pokemon.spe);
 
         // Choice Scarf: add a second entry with scarf modifier
         if (isChoiceScarf(member.item)) {
@@ -359,7 +361,8 @@ export interface SpeedRow {
 }
 
 export interface EntryGroup {
-    pokemonName: string;
+    pokemonName: string;   // display name for the group
+    hideName: string;      // real Pokemon name for hide filtering
     entries: SpeedEntry[];
 }
 
@@ -376,6 +379,7 @@ export function groupEntriesByPokemon(entries: SpeedEntry[]): EntryGroup[] {
     if (current.length > 0) groups.push(current);
     return groups.map(group => ({
         pokemonName: group[0].displayName ?? group[0].pokemon.name,
+        hideName: group[0].pokemon.name,
         entries: group,
     }));
 }

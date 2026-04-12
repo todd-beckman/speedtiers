@@ -291,7 +291,6 @@ function buildSlotEditor(slotIndex: number): HTMLElement {
 
     // Checkboxes
     addCheckbox(editor, 'Paralysis', current.modifiers.paralysis, v => { current.modifiers.paralysis = v; renderTableOnly(); });
-    addCheckbox(editor, 'Choice Scarf', current.modifiers.choiceScarf, v => { current.modifiers.choiceScarf = v; renderTableOnly(); });
     addCheckbox(editor, 'Tailwind', current.modifiers.tailwind, v => { current.modifiers.tailwind = v; renderTableOnly(); });
 
     // Ability

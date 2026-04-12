@@ -101,7 +101,7 @@ function loadTeam(): (TeamMember | null)[] {
                 stats: d.stats,
                 nature: d.nature,
                 modifiers: d.modifiers,
-                item: d.item,
+                item: d.item ?? '',
             };
         });
     } catch {
