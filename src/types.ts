@@ -4,6 +4,7 @@ export interface Pokemon {
   spe: number;
   ability?: Ability | Ability[];
   baseSpecies?: string; // lowercase canonical of base form (e.g., "venusaur" for "mega venusaur")
+  spriteIndex?: number; // position in spritesheet
 }
 
 export type Nature = 'hindering' | 'neutral' | 'beneficial';
@@ -34,6 +35,7 @@ export interface SpeedEntry {
   nature: Nature;
   speed: number;
   abilityActive: boolean;
+  displayName?: string;
 }
 
 export interface TeamMember {
@@ -47,4 +49,5 @@ export interface TeamMember {
 export interface TeamEntry {
   member: TeamMember;
   speed: number;
+  displayName?: string; // override for display (e.g., "Choice Scarf Garchomp")
 }

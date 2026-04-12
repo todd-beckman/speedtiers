@@ -1,4 +1,4 @@
-import { Modifiers, TeamMember, Nature, Ability } from './types';
+import { Modifiers, TeamMember, Nature, Ability, SpeedStage } from './types';
 import { UsageTier } from './usage';
 import { pokemonList } from './pokemon';
 
@@ -37,6 +37,9 @@ export let currentTier: UsageTier = loadTier();
 export const hiddenPokemon = new Set<string>();
 export const team: (TeamMember | null)[] = loadTeam();
 export let editingSlot: number | null = null;
+export let teamStage: SpeedStage = 0;
+export let teamParalysis = false;
+export let teamTailwind = false;
 
 // Setters needed because TypeScript `export let` bindings can't be assigned from other modules
 export function setSortDescending(v: boolean): void { sortDescending = v; }
@@ -46,6 +49,9 @@ export function setHideMinSpeedFast(v: boolean): void { hideMinSpeedFast = v; }
 export function setShowTeam(v: boolean): void { showTeam = v; }
 export function setCurrentTier(v: UsageTier): void { currentTier = v; }
 export function setEditingSlot(v: number | null): void { editingSlot = v; }
+export function setTeamStage(v: SpeedStage): void { teamStage = v; }
+export function setTeamParalysis(v: boolean): void { teamParalysis = v; }
+export function setTeamTailwind(v: boolean): void { teamTailwind = v; }
 
 // --- Persistence ---
 

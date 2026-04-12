@@ -4,6 +4,7 @@ import {
     buildSpeedRows, groupEntriesByPokemon,
     formatEntry, formatTeamEntry, natureClass,
 } from './entries';
+import { createSprite } from './ui-helpers';
 import { render } from './main';
 
 export function renderTable(): HTMLElement {
@@ -47,7 +48,9 @@ export function renderTable(): HTMLElement {
             for (const te of row.teamEntries) {
                 const span = document.createElement('span');
                 span.className = `pokemon-entry ${natureClass(te.member.nature)}`;
-                span.textContent = formatTeamEntry(te);
+                const sprite = createSprite(te.member.pokemon);
+                if (sprite) span.appendChild(sprite);
+                span.appendChild(document.createTextNode(formatTeamEntry(te)));
                 tdTeam.appendChild(span);
             }
             tr.appendChild(tdTeam);
@@ -68,7 +71,11 @@ export function renderTable(): HTMLElement {
                 const entry = group.entries[i];
                 const span = document.createElement('span');
                 span.className = `pokemon-entry ${natureClass(entry.nature)}`;
-                span.textContent = formatEntry(entry);
+                if (i === 0) {
+                    const sprite = createSprite(entry.pokemon);
+                    if (sprite) span.appendChild(sprite);
+                }
+                span.appendChild(document.createTextNode(formatEntry(entry)));
                 if (i === group.entries.length - 1) {
                     const hideBtn = document.createElement('button');
                     hideBtn.className = 'hide-btn';

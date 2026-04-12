@@ -95,7 +95,6 @@ export function buildMainControls(): HTMLElement {
     controls.appendChild(stageLabel);
 
     addCheckbox(controls, 'Paralysis', currentModifiers.paralysis, v => { currentModifiers.paralysis = v; render(); });
-    addCheckbox(controls, 'Choice Scarf', currentModifiers.choiceScarf, v => { currentModifiers.choiceScarf = v; render(); });
     addCheckbox(controls, 'Tailwind', currentModifiers.tailwind, v => { currentModifiers.tailwind = v; render(); });
     addCheckbox(controls, 'Hide Min Speed Fast', hideMinSpeedFast, v => { setHideMinSpeedFast(v); render(); });
 

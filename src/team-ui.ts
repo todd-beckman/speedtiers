@@ -2,7 +2,11 @@ import { Nature, Ability } from './types';
 import { calculateSpeed } from './calc';
 import { pokemonList } from './pokemon';
 import { importTeam } from './import';
-import { team, editingSlot, setEditingSlot, ABILITY_LABELS, createDefaultModifiers } from './state';
+import {
+    team, editingSlot, setEditingSlot, ABILITY_LABELS, createDefaultModifiers,
+    teamStage, teamParalysis, teamTailwind,
+    setTeamStage, setTeamParalysis, setTeamTailwind,
+} from './state';
 import { buildStageSelect, addCheckbox, NATURE_LABELS } from './ui-helpers';
 import { render, renderTableOnly } from './main';
 
@@ -13,6 +17,23 @@ export function buildTeamPanel(): HTMLElement {
     const heading = document.createElement('h2');
     heading.textContent = 'Team';
     panel.appendChild(heading);
+
+    // Team-wide modifiers
+    const teamMods = document.createElement('div');
+    teamMods.className = 'controls';
+
+    const stageLabel = document.createElement('label');
+    stageLabel.textContent = 'Stage: ';
+    stageLabel.appendChild(buildStageSelect(teamStage, stage => {
+        setTeamStage(stage);
+        renderTableOnly();
+    }));
+    teamMods.appendChild(stageLabel);
+
+    addCheckbox(teamMods, 'Paralysis', teamParalysis, v => { setTeamParalysis(v); renderTableOnly(); });
+    addCheckbox(teamMods, 'Tailwind', teamTailwind, v => { setTeamTailwind(v); renderTableOnly(); });
+
+    panel.appendChild(teamMods);
 
     const slots = document.createElement('div');
     slots.className = 'team-slots';
@@ -135,6 +156,16 @@ function buildImportUI(): HTMLElement {
     errorMsg.className = 'import-error';
 
     let expanded = false;
+
+    function doImport(): void {
+        const error = executeImport(textArea.value, importMainline);
+        if (error) {
+            errorMsg.textContent = error;
+            return;
+        }
+        render();
+    }
+
     importBtn.addEventListener('click', () => {
         if (!expanded) {
             expanded = true;
@@ -142,13 +173,14 @@ function buildImportUI(): HTMLElement {
             importBtn.textContent = 'Import';
             return;
         }
+        doImport();
+    });
 
-        const error = executeImport(textArea.value, importMainline);
-        if (error) {
-            errorMsg.textContent = error;
-            return;
+    textArea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            doImport();
         }
-        render();
     });
 
     section.appendChild(textArea);

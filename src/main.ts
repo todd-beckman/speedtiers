@@ -6,6 +6,7 @@ import { renderTable } from './table';
 
 let tableContainer: HTMLElement;
 let teamPanelContainer: HTMLElement;
+let mainControlsContainer: HTMLElement;
 
 export function renderTableOnly(): void {
     saveTeam();
@@ -13,6 +14,7 @@ export function renderTableOnly(): void {
     if (showTeam) {
         teamPanelContainer.replaceChildren(buildTeamPanel());
     }
+    mainControlsContainer.replaceChildren(buildGlobalControls(), buildMainControls());
 }
 
 export function render(): void {
@@ -27,15 +29,24 @@ export function render(): void {
     header.appendChild(title);
     app.appendChild(header);
 
-    app.appendChild(buildGlobalControls());
+    // Split panel: team on left, main controls on right
+    const splitPanel = document.createElement('div');
+    splitPanel.className = 'split-panel';
 
+    teamPanelContainer = document.createElement('div');
+    teamPanelContainer.className = 'split-left';
     if (showTeam) {
-        teamPanelContainer = document.createElement('div');
         teamPanelContainer.appendChild(buildTeamPanel());
-        app.appendChild(teamPanelContainer);
     }
+    splitPanel.appendChild(teamPanelContainer);
 
-    app.appendChild(buildMainControls());
+    mainControlsContainer = document.createElement('div');
+    mainControlsContainer.className = 'split-right';
+    mainControlsContainer.appendChild(buildGlobalControls());
+    mainControlsContainer.appendChild(buildMainControls());
+    splitPanel.appendChild(mainControlsContainer);
+
+    app.appendChild(splitPanel);
 
     tableContainer = document.createElement('div');
     tableContainer.appendChild(renderTable());

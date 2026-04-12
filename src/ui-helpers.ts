@@ -1,4 +1,4 @@
-import { Nature, SpeedStage } from './types';
+import { Nature, SpeedStage, Pokemon } from './types';
 
 export const NATURE_LABELS: Record<Nature, string> = {
     beneficial: 'Beneficial (+)',
@@ -19,6 +19,19 @@ export function buildStageSelect(currentStage: SpeedStage, onChange: (stage: Spe
         onChange(Number(select.value) as SpeedStage);
     });
     return select;
+}
+
+const SPRITE_COLS = 13;
+const SPRITE_CELL = 32; // display size in px
+
+export function createSprite(pokemon: Pokemon): HTMLSpanElement | null {
+    if (pokemon.spriteIndex === undefined) return null;
+    const col = (pokemon.spriteIndex % SPRITE_COLS) * 2; // *2 for pairs, take left
+    const row = Math.floor(pokemon.spriteIndex / SPRITE_COLS);
+    const span = document.createElement('span');
+    span.className = 'pokemon-sprite';
+    span.style.backgroundPosition = `-${col * SPRITE_CELL}px -${row * SPRITE_CELL}px`;
+    return span;
 }
 
 export function addCheckbox(

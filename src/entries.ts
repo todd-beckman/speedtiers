@@ -5,6 +5,7 @@ import { isInTier } from './usage';
 import {
     hideMinSpeedFast, compareFilter, currentTier,
     hiddenPokemon, team, ABILITY_LABELS,
+    teamStage, teamParalysis, teamTailwind,
     setCompareErrors,
 } from './state';
 
@@ -30,17 +31,19 @@ export function formatNature(nature: Nature): string {
 }
 
 export function formatEntry(entry: SpeedEntry): string {
+    const name = entry.displayName ?? entry.pokemon.name;
     const nature = formatNature(entry.nature);
     const abilityLabel = entry.abilityActive ? getAbilityLabel(entry.pokemon) + ' ' : '';
-    return `${nature}${entry.stats} ${abilityLabel}${entry.pokemon.name}`;
+    return `${nature}${entry.stats} ${abilityLabel}${name}`;
 }
 
 export function formatTeamEntry(te: TeamEntry): string {
+    const name = te.displayName ?? te.member.pokemon.name;
     const nature = formatNature(te.member.nature);
     const abilityLabel = te.member.modifiers.ability !== 'none'
         ? ABILITY_LABELS[te.member.modifiers.ability] + ' '
         : '';
-    return `${nature}${te.member.stats} ${abilityLabel}${te.member.pokemon.name}`;
+    return `${nature}${te.member.stats} ${abilityLabel}${name}`;
 }
 
 export function natureClass(nature: Nature): string {
@@ -72,9 +75,17 @@ export function generateEntries(modifiers: Modifiers): SpeedEntry[] {
         return speed;
     }
 
+    const scarfMods: Modifiers = { ...modifiers, choiceScarf: true };
+
     for (const mon of pokemonList) {
+        // Skip same-speed forms (they exist only for sprite mapping / import matching)
+        if (mon.baseSpecies) {
+            const base = pokemonList.find(p => p.id === mon.baseSpecies);
+            if (base && base.spe === mon.spe) continue;
+        }
+
         for (const config of BASE_CONFIGS) {
-            if (hideMinSpeedFast && mon.spe >= 100 && config.nature === 'hindering') continue;
+            if (hideMinSpeedFast && mon.spe >= 100 && (config.nature === 'hindering' || config.stats === 0)) continue;
             entries.push({
                 pokemon: mon,
                 stats: config.stats,
@@ -82,6 +93,23 @@ export function generateEntries(modifiers: Modifiers): SpeedEntry[] {
                 speed: cachedSpeed(mon.spe, config.stats, config.nature, modifiers),
                 abilityActive: false,
             });
+        }
+
+        // Choice Scarf entries: max stats only, beneficial and neutral
+        // Cannot be used with Megas or Unburden
+        const isMega = mon.name.startsWith('Mega ') || mon.name.includes('-Mega');
+        const hasUnburden = getPrimaryAbility(mon) === 'unburden';
+        if (!isMega && !hasUnburden) {
+            for (const nature of ['beneficial', 'neutral'] as Nature[]) {
+                entries.push({
+                    pokemon: mon,
+                    stats: 32,
+                    nature,
+                    speed: cachedSpeed(mon.spe, 32, nature, scarfMods),
+                    abilityActive: false,
+                    displayName: `Choice Scarf ${mon.name}`,
+                });
+            }
         }
 
         const ability = getPrimaryAbility(mon);
@@ -108,6 +136,7 @@ function normalizeInput(input: string): string {
 // Special case aliases
 const ALIASES: Record<string, string> = {
     'floette': 'floette-eternal',
+    'floette eternal': 'floette-eternal',
 };
 
 function resolveAlias(input: string): string {
@@ -246,14 +275,51 @@ function getMegaXYZSuffix(megaName: string): string {
     return match ? match[1] : '';
 }
 
+function isChoiceScarf(item: string): boolean {
+    return item.toLowerCase() === 'choice scarf';
+}
+
+function applyTeamModifiers(mods: Modifiers): Modifiers {
+    return {
+        ...mods,
+        stage: teamStage || mods.stage,
+        paralysis: teamParalysis || mods.paralysis,
+        tailwind: teamTailwind || mods.tailwind,
+    };
+}
+
+function addTeamEntry(
+    entries: TeamEntry[],
+    member: TeamMember,
+    spe: number,
+    displayName?: string,
+): void {
+    const mods = applyTeamModifiers(member.modifiers);
+    entries.push({
+        member,
+        speed: calculateSpeed(spe, member.stats, member.nature, mods),
+        displayName,
+    });
+}
+
 export function generateTeamEntries(): TeamEntry[] {
     const entries: TeamEntry[] = [];
     for (const member of team) {
         if (!member) continue;
-        entries.push({
-            member,
-            speed: calculateSpeed(member.pokemon.spe, member.stats, member.nature, member.modifiers),
-        });
+
+        // Base entry
+        addTeamEntry(entries, member, member.pokemon.spe);
+
+        // Choice Scarf: add a second entry with scarf modifier
+        if (isChoiceScarf(member.item)) {
+            const scarfMember: TeamMember = {
+                ...member,
+                modifiers: { ...member.modifiers, choiceScarf: true },
+            };
+            addTeamEntry(entries, scarfMember, member.pokemon.spe, `Choice Scarf ${member.pokemon.name}`);
+        }
+
+        // Mega forms
         const itemSuffix = getMegaStoneSuffix(member.item);
         if (itemSuffix !== null) {
             const megas = findMegaForms(member.pokemon);
@@ -263,14 +329,8 @@ export function generateTeamEntries(): TeamEntry[] {
                     const megaSuffix = getMegaXYZSuffix(mega.name);
                     if (megaSuffix !== itemSuffix) continue;
                 }
-                const megaMember: TeamMember = {
-                    ...member,
-                    pokemon: mega,
-                };
-                entries.push({
-                    member: megaMember,
-                    speed: calculateSpeed(mega.spe, member.stats, member.nature, member.modifiers),
-                });
+                const megaMember: TeamMember = { ...member, pokemon: mega };
+                addTeamEntry(entries, megaMember, mega.spe);
             }
         }
     }
@@ -294,7 +354,7 @@ export function groupEntriesByPokemon(entries: SpeedEntry[]): EntryGroup[] {
     const groups: SpeedEntry[][] = [];
     let current: SpeedEntry[] = [];
     for (const entry of entries) {
-        if (current.length > 0 && (current[0].pokemon !== entry.pokemon || current[0].abilityActive !== entry.abilityActive)) {
+        if (current.length > 0 && (current[0].pokemon !== entry.pokemon || current[0].abilityActive !== entry.abilityActive || current[0].displayName !== entry.displayName)) {
             groups.push(current);
             current = [];
         }
@@ -302,7 +362,7 @@ export function groupEntriesByPokemon(entries: SpeedEntry[]): EntryGroup[] {
     }
     if (current.length > 0) groups.push(current);
     return groups.map(group => ({
-        pokemonName: group[0].pokemon.name,
+        pokemonName: group[0].displayName ?? group[0].pokemon.name,
         entries: group,
     }));
 }
