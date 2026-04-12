@@ -313,9 +313,29 @@ h1 {
     font-size: 0.875rem;
 }
 
-.slot-editor input[type="range"] {
-    width: 100px;
+.stats-slider {
+    width: 200px;
     vertical-align: middle;
+}
+
+.stats-number {
+    width: 45px;
+    background: #2a2a3e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-left: 4px;
+    vertical-align: middle;
+    -moz-appearance: textfield;
+}
+
+.stats-number::-webkit-inner-spin-button,
+.stats-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Import */

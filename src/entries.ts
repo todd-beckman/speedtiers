@@ -69,7 +69,7 @@ export function generateEntries(modifiers: Modifiers): SpeedEntry[] {
     const speedCache = new Map<string, number>();
 
     function cachedSpeed(spe: number, stats: number, nature: Nature, mods: Modifiers): number {
-        const key = `${spe}|${stats}|${nature}|${mods.ability}`;
+        const key = `${spe}|${stats}|${nature}|${mods.ability}|${mods.choiceScarf}|${mods.paralysis}|${mods.tailwind}|${mods.stage}`;
         let speed = speedCache.get(key);
         if (speed === undefined) {
             speed = calculateSpeed(spe, stats, nature, mods);
@@ -310,6 +310,15 @@ export function generateTeamEntries(): TeamEntry[] {
     const entries: TeamEntry[] = [];
     for (const member of team) {
         if (!member) continue;
+
+        // If this is a Mega, also show the base form
+        if (member.pokemon.baseSpecies) {
+            const base = pokemonById.get(member.pokemon.baseSpecies);
+            if (base) {
+                const baseMember: TeamMember = { ...member, pokemon: base };
+                addTeamEntry(entries, baseMember, base.spe);
+            }
+        }
 
         // Base entry
         addTeamEntry(entries, member, member.pokemon.spe);

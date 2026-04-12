@@ -232,20 +232,34 @@ function buildSlotEditor(slotIndex: number): HTMLElement {
     if (!member) return editor;
     const current = member;
 
-    // Stats slider
+    // Stats slider + number input
     const statsLabel = document.createElement('label');
-    statsLabel.textContent = `Stats: ${member.stats} `;
+    statsLabel.textContent = 'Stats: ';
     const statsSlider = document.createElement('input');
     statsSlider.type = 'range';
+    statsSlider.className = 'stats-slider';
     statsSlider.min = '0';
     statsSlider.max = '32';
     statsSlider.value = String(member.stats);
+    const statsNumber = document.createElement('input');
+    statsNumber.type = 'number';
+    statsNumber.className = 'stats-number';
+    statsNumber.min = '0';
+    statsNumber.max = '32';
+    statsNumber.value = String(member.stats);
     statsSlider.addEventListener('input', () => {
         member.stats = Number(statsSlider.value);
-        statsLabel.firstChild!.textContent = `Stats: ${member.stats} `;
+        statsNumber.value = statsSlider.value;
+        renderTableOnly();
+    });
+    statsNumber.addEventListener('input', () => {
+        const val = Math.max(0, Math.min(32, Number(statsNumber.value) || 0));
+        member.stats = val;
+        statsSlider.value = String(val);
         renderTableOnly();
     });
     statsLabel.appendChild(statsSlider);
+    statsLabel.appendChild(statsNumber);
     editor.appendChild(statsLabel);
 
     // Nature
