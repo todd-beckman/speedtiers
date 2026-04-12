@@ -33,11 +33,67 @@ let currentModifiers: Modifiers = {
 let sortDescending = true;
 let nameFilter = '';
 let hideMinSpeedFast = true;
-let showTeam = false;
-let currentTier: UsageTier = 'top100';
+let showTeam = localStorage.getItem('speedtiers-team') !== null && loadTeam().some(m => m !== null);
+let currentTier: UsageTier = loadTier();
 const hiddenPokemon = new Set<string>();
-const team: (TeamMember | null)[] = [null, null, null, null, null, null];
+const team: (TeamMember | null)[] = loadTeam();
 let editingSlot: number | null = null;
+
+// --- Persistence ---
+
+function loadTier(): UsageTier {
+    const saved = localStorage.getItem('speedtiers-tier');
+    if (saved === 'top30' || saved === 'top100' || saved === 'all') return saved;
+    return 'top100';
+}
+
+function saveTier(): void {
+    localStorage.setItem('speedtiers-tier', currentTier);
+}
+
+interface SavedTeamMember {
+    pokemonName: string;
+    stats: number;
+    nature: Nature;
+    modifiers: Modifiers;
+    item: string;
+}
+
+function saveTeam(): void {
+    const data: (SavedTeamMember | null)[] = team.map(m => {
+        if (!m) return null;
+        return {
+            pokemonName: m.pokemon.name,
+            stats: m.stats,
+            nature: m.nature,
+            modifiers: m.modifiers,
+            item: m.item,
+        };
+    });
+    localStorage.setItem('speedtiers-team', JSON.stringify(data));
+}
+
+function loadTeam(): (TeamMember | null)[] {
+    const saved = localStorage.getItem('speedtiers-team');
+    if (!saved) return [null, null, null, null, null, null];
+    try {
+        const data: (SavedTeamMember | null)[] = JSON.parse(saved);
+        return data.map(d => {
+            if (!d) return null;
+            const pokemon = pokemonList.find(p => p.name === d.pokemonName);
+            if (!pokemon) return null;
+            return {
+                pokemon,
+                stats: d.stats,
+                nature: d.nature,
+                modifiers: d.modifiers,
+                item: d.item,
+            };
+        });
+    } catch {
+        return [null, null, null, null, null, null];
+    }
+}
 
 // --- Helpers ---
 
@@ -308,6 +364,7 @@ function buildGlobalControls(): HTMLElement {
     }
     tierSelect.addEventListener('change', () => {
         currentTier = tierSelect.value as UsageTier;
+        saveTier();
         render();
     });
     tierLabel.appendChild(tierSelect);
@@ -772,6 +829,7 @@ let tableContainer: HTMLElement;
 let teamPanelContainer: HTMLElement;
 
 function renderTableOnly(): void {
+    saveTeam();
     tableContainer.replaceChildren(renderTable());
     if (showTeam) {
         teamPanelContainer.replaceChildren(buildTeamPanel());
@@ -779,6 +837,7 @@ function renderTableOnly(): void {
 }
 
 function render(): void {
+    saveTeam();
     const app = document.getElementById('app')!;
     app.innerHTML = '';
 
