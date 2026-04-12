@@ -38,7 +38,7 @@ export function buildGlobalControls(): HTMLElement {
     const tierLabel = document.createElement('label');
     tierLabel.textContent = 'Tier: ';
     const tierSelect = document.createElement('select');
-    for (const tier of ['top30', 'top100', 'all'] as UsageTier[]) {
+    for (const tier of ['top30', 'top50', 'top100', 'all'] as UsageTier[]) {
         const opt = document.createElement('option');
         opt.value = tier;
         opt.textContent = USAGE_TIER_LABELS[tier];
