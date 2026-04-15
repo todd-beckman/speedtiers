@@ -1,8 +1,8 @@
 import { UsageTier, USAGE_TIER_LABELS } from './usage';
 import {
-    currentModifiers, sortDescending, compareFilter, compareErrors, hideMinSpeedFast,
+    currentModifiers, sortDescending, compareFilter, compareErrors, hideMinSpeedFast, showChoiceScarf,
     currentTier, hiddenPokemon,
-    setSortDescending, setCompareFilter, setHideMinSpeedFast,
+    setSortDescending, setCompareFilter, setHideMinSpeedFast, setShowChoiceScarf,
     setCurrentTier, saveTier,
 } from './state';
 import { buildStageSelect, addCheckbox } from './ui-helpers';
@@ -87,6 +87,7 @@ export function buildMainControls(): HTMLElement {
 
     addCheckbox(controls, 'Paralysis', currentModifiers.paralysis, v => { currentModifiers.paralysis = v; render(); });
     addCheckbox(controls, 'Tailwind', currentModifiers.tailwind, v => { currentModifiers.tailwind = v; render(); });
+    addCheckbox(controls, 'Choice Scarf', showChoiceScarf, v => { setShowChoiceScarf(v); render(); });
     addCheckbox(controls, 'Hide Min Speed Fast', hideMinSpeedFast, v => { setHideMinSpeedFast(v); render(); });
 
     // Restore hidden

@@ -3,7 +3,7 @@ import { calculateSpeed } from './calc';
 import { pokemonList } from './pokemon';
 import { isInTier } from './usage';
 import {
-    hideMinSpeedFast, compareFilter, currentTier,
+    hideMinSpeedFast, showChoiceScarf, compareFilter, currentTier,
     hiddenPokemon, team, ABILITY_LABELS,
     teamStage, teamParalysis, teamTailwind,
     setCompareErrors,
@@ -239,10 +239,11 @@ export function filterEntries(entries: SpeedEntry[]): SpeedEntry[] {
         return entries.filter(entry => compareSet.has(entry.pokemon.id));
     }
 
-    // Default filtering: tier + hidden
+    // Default filtering: tier + hidden + choice scarf toggle
     return entries.filter(entry => {
         if (!isInTier(entry.pokemon.name, currentTier)) return false;
         if (hiddenPokemon.has(entry.pokemon.name)) return false;
+        if (!showChoiceScarf && entry.displayName?.startsWith('Choice Scarf')) return false;
         return true;
     });
 }
