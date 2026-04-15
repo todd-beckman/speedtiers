@@ -3,6 +3,7 @@ import { loadTiers } from './usage';
 import { buildGlobalControls, buildMainControls } from './controls';
 import { buildTeamPanel } from './team-ui';
 import { renderTable } from './table';
+import { initTheme, toggleTheme, getThemeLabel } from './theme';
 
 let tableContainer: HTMLElement;
 let teamPanelContainer: HTMLElement;
@@ -31,6 +32,15 @@ export function render(): void {
     const title = document.createElement('h1');
     title.textContent = 'Speed Tiers';
     header.appendChild(title);
+    const themeBtn = document.createElement('button');
+    themeBtn.className = 'theme-toggle';
+    themeBtn.textContent = getThemeLabel();
+    themeBtn.title = 'Toggle light/dark mode';
+    themeBtn.addEventListener('click', () => {
+        toggleTheme();
+        themeBtn.textContent = getThemeLabel();
+    });
+    header.appendChild(themeBtn);
     app.appendChild(header);
 
     // Split panel: team on left, main controls on right
@@ -55,4 +65,5 @@ export function render(): void {
     app.appendChild(tableContainer);
 }
 
+initTheme();
 loadTiers().then(() => render());
