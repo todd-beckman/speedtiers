@@ -1,4 +1,4 @@
-import { currentModifiers, sortDescending, showTeam, hiddenPokemon } from './state';
+import { currentModifiers, sortDescending, hiddenPokemon } from './state';
 import {
     generateEntries, filterEntries, generateTeamEntries,
     buildSpeedRows, groupEntriesByPokemon,
@@ -10,7 +10,7 @@ import { render } from './main';
 export function renderTable(): HTMLElement {
     const allEntries = generateEntries(currentModifiers);
     const mainEntries = filterEntries(allEntries);
-    const teamEntries = showTeam ? generateTeamEntries() : [];
+    const teamEntries = generateTeamEntries();
     const rows = buildSpeedRows(mainEntries, teamEntries);
     rows.sort((a, b) => sortDescending ? b.speed - a.speed : a.speed - b.speed);
 
@@ -20,11 +20,9 @@ export function renderTable(): HTMLElement {
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    if (showTeam) {
-        const thTeam = document.createElement('th');
-        thTeam.textContent = 'Team';
-        headerRow.appendChild(thTeam);
-    }
+    const thTeam = document.createElement('th');
+    thTeam.textContent = 'Team';
+    headerRow.appendChild(thTeam);
 
     const thSpeed = document.createElement('th');
     thSpeed.textContent = 'Speed';
@@ -42,19 +40,17 @@ export function renderTable(): HTMLElement {
         const tr = document.createElement('tr');
 
         // Team column
-        if (showTeam) {
-            const tdTeam = document.createElement('td');
-            tdTeam.className = 'team-cell';
-            for (const te of row.teamEntries) {
-                const span = document.createElement('span');
-                span.className = `pokemon-entry ${natureClass(te.member.nature)}`;
-                const sprite = createSprite(te.member.pokemon);
-                if (sprite) span.appendChild(sprite);
-                span.appendChild(document.createTextNode(formatTeamEntry(te)));
-                tdTeam.appendChild(span);
-            }
-            tr.appendChild(tdTeam);
+        const tdTeam = document.createElement('td');
+        tdTeam.className = 'team-cell';
+        for (const te of row.teamEntries) {
+            const span = document.createElement('span');
+            span.className = `pokemon-entry ${natureClass(te.member.nature)}`;
+            const sprite = createSprite(te.member.pokemon);
+            if (sprite) span.appendChild(sprite);
+            span.appendChild(document.createTextNode(formatTeamEntry(te)));
+            tdTeam.appendChild(span);
         }
+        tr.appendChild(tdTeam);
 
         // Speed column
         const tdSpeed = document.createElement('td');

@@ -1,4 +1,4 @@
-import { showTeam, saveTeam } from './state';
+import { saveTeam } from './state';
 import { loadTiers } from './usage';
 import { buildGlobalControls, buildMainControls } from './controls';
 import { buildTeamPanel } from './team-ui';
@@ -11,17 +11,13 @@ let mainControlsContainer: HTMLElement;
 export function renderTableOnly(): void {
     saveTeam();
     tableContainer.replaceChildren(renderTable());
-    if (showTeam) {
-        teamPanelContainer.replaceChildren(buildTeamPanel());
-    }
+    teamPanelContainer.replaceChildren(buildTeamPanel());
 }
 
 export function renderAll(): void {
     saveTeam();
     tableContainer.replaceChildren(renderTable());
-    if (showTeam) {
-        teamPanelContainer.replaceChildren(buildTeamPanel());
-    }
+    teamPanelContainer.replaceChildren(buildTeamPanel());
     mainControlsContainer.replaceChildren(buildGlobalControls(), buildMainControls());
 }
 
@@ -43,9 +39,7 @@ export function render(): void {
 
     teamPanelContainer = document.createElement('div');
     teamPanelContainer.className = 'split-left';
-    if (showTeam) {
-        teamPanelContainer.appendChild(buildTeamPanel());
-    }
+    teamPanelContainer.appendChild(buildTeamPanel());
     splitPanel.appendChild(teamPanelContainer);
 
     mainControlsContainer = document.createElement('div');

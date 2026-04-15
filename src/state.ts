@@ -32,7 +32,6 @@ export let sortDescending = true;
 export let compareFilter = '';
 export let compareErrors: string[] = [];
 export let hideMinSpeedFast = true;
-export let showTeam = localStorage.getItem('speedtiers-team') !== null && loadTeam().some(m => m !== null);
 export let currentTier: UsageTier = loadTier();
 export const hiddenPokemon = new Set<string>();
 export const team: (TeamMember | null)[] = loadTeam();
@@ -46,7 +45,6 @@ export function setSortDescending(v: boolean): void { sortDescending = v; }
 export function setCompareFilter(v: string): void { compareFilter = v; }
 export function setCompareErrors(v: string[]): void { compareErrors = v; }
 export function setHideMinSpeedFast(v: boolean): void { hideMinSpeedFast = v; }
-export function setShowTeam(v: boolean): void { showTeam = v; }
 export function setCurrentTier(v: UsageTier): void { currentTier = v; }
 export function setEditingSlot(v: number | null): void { editingSlot = v; }
 export function setTeamStage(v: SpeedStage): void { teamStage = v; }
@@ -65,7 +63,7 @@ interface SavedTeamMember {
 
 function loadTier(): UsageTier {
     const saved = localStorage.getItem('speedtiers-tier');
-    if (saved === 'top30' || saved === 'top100' || saved === 'all') return saved;
+    if (saved === 'top30' || saved === 'top50' || saved === 'top100' || saved === 'all') return saved;
     return 'top100';
 }
 

@@ -1,8 +1,8 @@
 import { UsageTier, USAGE_TIER_LABELS } from './usage';
 import {
     currentModifiers, sortDescending, compareFilter, compareErrors, hideMinSpeedFast,
-    showTeam, currentTier, hiddenPokemon,
-    setSortDescending, setCompareFilter, setHideMinSpeedFast, setShowTeam,
+    currentTier, hiddenPokemon,
+    setSortDescending, setCompareFilter, setHideMinSpeedFast,
     setCurrentTier, saveTier,
 } from './state';
 import { buildStageSelect, addCheckbox } from './ui-helpers';
@@ -63,15 +63,6 @@ export function buildGlobalControls(): HTMLElement {
     });
     controls.appendChild(sortBtn);
 
-    // Team toggle
-    const teamBtn = document.createElement('button');
-    teamBtn.className = 'control-btn';
-    teamBtn.textContent = showTeam ? 'Hide Team' : 'Show Team';
-    teamBtn.addEventListener('click', () => {
-        setShowTeam(!showTeam);
-        render();
-    });
-    controls.appendChild(teamBtn);
 
     return controls;
 }
