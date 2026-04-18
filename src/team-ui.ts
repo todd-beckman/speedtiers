@@ -292,6 +292,10 @@ function buildSlotEditor(slotIndex: number): HTMLElement {
     // Checkboxes
     addCheckbox(editor, 'Paralysis', current.modifiers.paralysis, v => { current.modifiers.paralysis = v; renderTableOnly(); });
     addCheckbox(editor, 'Tailwind', current.modifiers.tailwind, v => { current.modifiers.tailwind = v; renderTableOnly(); });
+    addCheckbox(editor, 'Choice Scarf', current.item.toLowerCase() === 'choice scarf', v => {
+        current.item = v ? 'Choice Scarf' : '';
+        renderTableOnly();
+    });
 
     // Ability
     if (member.pokemon.ability) {
