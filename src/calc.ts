@@ -46,7 +46,7 @@ export function calculateSpeed(
 
     if (modifiers.paralysis) speed = Math.floor(speed * 0.5);
     if (modifiers.choiceScarf) speed = Math.floor(speed * 1.5);
-    if (modifiers.tailwind) speed = Math.floor(speed * 1.5);
+    if (modifiers.tailwind) speed = Math.floor(speed * 2);
 
     speed = Math.floor(speed * getAbilityMultiplier(modifiers.ability));
 
