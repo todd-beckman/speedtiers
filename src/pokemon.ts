@@ -17,6 +17,8 @@ export const pokemonList: Pokemon[] = [
     { id: "pikachu", name: "Pikachu", spe: 90, spriteIndex: 12 },
     { id: "raichu", name: "Raichu", spe: 110, spriteIndex: 13 },
     { id: "alolan raichu", name: "Alolan Raichu", spe: 110, ability: 'surge-surfer', baseSpecies: "raichu", spriteIndex: 14 },
+    { id: "mega raichu x", name: "Mega Raichu X", spe: 110, baseSpecies: "raichu" },
+    { id: "mega raichu y", name: "Mega Raichu Y", spe: 130, baseSpecies: "raichu" },
     { id: "clefable", name: "Clefable", spe: 60, spriteIndex: 15 },
     { id: "mega clefable", name: "Mega Clefable", spe: 70, baseSpecies: "clefable", spriteIndex: 16 },
     { id: "ninetales", name: "Ninetales", spe: 100, spriteIndex: 17 },
@@ -54,6 +56,7 @@ export const pokemonList: Pokemon[] = [
     { id: "snorlax", name: "Snorlax", spe: 30, spriteIndex: 49 },
     { id: "dragonite", name: "Dragonite", spe: 80, spriteIndex: 50 },
     { id: "mega dragonite", name: "Mega Dragonite", spe: 100, baseSpecies: "dragonite", spriteIndex: 51 },
+    { id: "vileplume", name: "Vileplume", spe: 50, ability: 'chlorophyll' },
 
     // Gen 2
     { id: "meganium", name: "Meganium", spe: 80, spriteIndex: 52 },
@@ -84,6 +87,7 @@ export const pokemonList: Pokemon[] = [
     { id: "mega houndoom", name: "Mega Houndoom", spe: 115, baseSpecies: "houndoom", spriteIndex: 77 },
     { id: "tyranitar", name: "Tyranitar", spe: 61, spriteIndex: 78 },
     { id: "mega tyranitar", name: "Mega Tyranitar", spe: 71, baseSpecies: "tyranitar", spriteIndex: 79 },
+    { id: "qwilfish", name: "Qwilfish", spe: 85, ability: 'swift-swim' },
 
     // Gen 3
     { id: "pelipper", name: "Pelipper", spe: 65, spriteIndex: 80 },
@@ -117,6 +121,16 @@ export const pokemonList: Pokemon[] = [
     { id: "mega absol", name: "Mega Absol", spe: 115, baseSpecies: "absol", spriteIndex: 108 },
     { id: "glalie", name: "Glalie", spe: 80, spriteIndex: 109 },
     { id: "mega glalie", name: "Mega Glalie", spe: 100, baseSpecies: "glalie", spriteIndex: 110 },
+    { id: "sceptile", name: "Sceptile", spe: 120, ability: 'unburden' },
+    { id: "mega sceptile", name: "Mega Sceptile", spe: 145, baseSpecies: "sceptile" },
+    { id: "blaziken", name: "Blaziken", spe: 80 },
+    { id: "mega blaziken", name: "Mega Blaziken", spe: 100, baseSpecies: "blaziken" },
+    { id: "swampert", name: "Swampert", spe: 60 },
+    { id: "mega swampert", name: "Mega Swampert", spe: 70, baseSpecies: "swampert" },
+    { id: "mawile", name: "Mawile", spe: 50 },
+    { id: "mega mawile", name: "Mega Mawile", spe: 50, baseSpecies: "mawile" },
+    { id: "metagross", name: "Metagross", spe: 70 },
+    { id: "mega metagross", name: "Mega Metagross", spe: 110, baseSpecies: "metagross" },
 
     // Gen 4
     { id: "torterra", name: "Torterra", spe: 56, spriteIndex: 111 },
@@ -153,6 +167,8 @@ export const pokemonList: Pokemon[] = [
     { id: "rotom-frost", name: "Rotom-Frost", spe: 86, baseSpecies: "rotom", spriteIndex: 142 },
     { id: "rotom-fan", name: "Rotom-Fan", spe: 86, baseSpecies: "rotom", spriteIndex: 143 },
     { id: "rotom-mow", name: "Rotom-Mow", spe: 86, baseSpecies: "rotom", spriteIndex: 144 },
+    { id: "staraptor", name: "Staraptor", spe: 100 },
+    { id: "mega staraptor", name: "Mega Staraptor", spe: 110, baseSpecies: "staraptor" },
 
     // Gen 5
     { id: "serperior", name: "Serperior", spe: 113, spriteIndex: 145 },
@@ -188,6 +204,13 @@ export const pokemonList: Pokemon[] = [
     { id: "mega golurk", name: "Mega Golurk", spe: 55, baseSpecies: "golurk", spriteIndex: 175 },
     { id: "hydreigon", name: "Hydreigon", spe: 98, spriteIndex: 176 },
     { id: "volcarona", name: "Volcarona", spe: 100, spriteIndex: 177 },
+    { id: "musharna", name: "Musharna", spe: 29 },
+    { id: "scrafty", name: "Scrafty", spe: 58 },
+    { id: "mega scrafty", name: "Mega Scrafty", spe: 68, baseSpecies: "scrafty" },
+    { id: "scolipede", name: "Scolipede", spe: 112 },
+    { id: "mega scolipede", name: "Mega Scolipede", spe: 62, baseSpecies: "scolipede" },
+    { id: "eelektross", name: "Eelektross", spe: 50 },
+    { id: "mega eelektross", name: "Mega Eelektross", spe: 80, baseSpecies: "eelektross" },
 
     // Gen 6
     { id: "chesnaught", name: "Chesnaught", spe: 64, spriteIndex: 178 },
@@ -230,6 +253,14 @@ export const pokemonList: Pokemon[] = [
     { id: "avalugg", name: "Avalugg", spe: 28, spriteIndex: 247 },
     { id: "hisuian avalugg", name: "Hisuian Avalugg", spe: 38, baseSpecies: "avalugg", spriteIndex: 248 },
     { id: "noivern", name: "Noivern", spe: 123, spriteIndex: 249 },
+    { id: "pyroar", name: "Pyroar", spe: 106 },
+    { id: "mega pyroar", name: "Mega Pyroar", spe: 126, baseSpecies: "pyroar" },
+    { id: "malamar", name: "Malamar", spe: 73 },
+    { id: "mega malamar", name: "Mega Malamar", spe: 88, baseSpecies: "malamar" },
+    { id: "barbaracle", name: "Barbaracle", spe: 68 },
+    { id: "mega barbaracle", name: "Mega Barbaracle", spe: 88, baseSpecies: "barbaracle" },
+    { id: "dragalge", name: "Dragalge", spe: 44 },
+    { id: "mega dragalge", name: "Mega Dragalge", spe: 44, baseSpecies: "dragalge" },
 
     // Gen 7
     { id: "decidueye", name: "Decidueye", spe: 70, spriteIndex: 250 },
@@ -267,6 +298,9 @@ export const pokemonList: Pokemon[] = [
     { id: "morpeko", name: "Morpeko", spe: 97, spriteIndex: 288 },
     { id: "morpeko-hangry", name: "Morpeko-Hangry", spe: 97, baseSpecies: "morpeko", spriteIndex: 289 },
     { id: "dragapult", name: "Dragapult", spe: 142, spriteIndex: 290 },
+    { id: "grimmsnarl", name: "Grimmsnarl", spe: 60 },
+    { id: "falinks", name: "Falinks", spe: 75 },
+    { id: "mega falinks", name: "Mega Falinks", spe: 100, baseSpecies: "falinks" },
 
     // Legends: Arceus
     { id: "wyrdeer", name: "Wyrdeer", spe: 65, spriteIndex: 291 },
@@ -274,6 +308,7 @@ export const pokemonList: Pokemon[] = [
     { id: "basculegion", name: "Basculegion", spe: 78, ability: 'swift-swim', spriteIndex: 293 },
     { id: "basculegion-f", name: "Basculegion-F", spe: 78, ability: 'swift-swim', baseSpecies: "basculegion", spriteIndex: 294 },
     { id: "sneasler", name: "Sneasler", spe: 120, ability: 'unburden', spriteIndex: 295 },
+    { id: "overqwil", name: "Overqwil", spe: 85, ability: 'swift-swim' },
 
     // Gen 9
     { id: "meowscarada", name: "Meowscarada", spe: 123, spriteIndex: 296 },
@@ -299,4 +334,7 @@ export const pokemonList: Pokemon[] = [
     { id: "sinistcha", name: "Sinistcha", spe: 70, spriteIndex: 317 },
     { id: "archaludon", name: "Archaludon", spe: 85, spriteIndex: 318 },
     { id: "hydrapple", name: "Hydrapple", spe: 44, spriteIndex: 319 },
+    { id: "houndstone", name: "Houndstone", spe: 68, ability: 'sand-rush' },
+    { id: "annihilape", name: "Annihilape", spe: 90 },
+    { id: "gholdengo", name: "Gholdengo", spe: 84 },
 ];

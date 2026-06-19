@@ -24,7 +24,13 @@ export function buildStageSelect(currentStage: SpeedStage, onChange: (stage: Spe
 const SPRITE_COLS = 13;
 const SPRITE_CELL = 32; // display size in px
 
+// Sprite rendering is temporarily disabled until a complete sprite sheet is
+// available. Flip this back to true to re-enable; the rendering logic below is
+// kept intact. See web/public/sprites.jpeg and Pokemon.spriteIndex.
+const SPRITES_ENABLED = false;
+
 export function createSprite(pokemon: Pokemon): HTMLSpanElement | null {
+    if (!SPRITES_ENABLED) return null;
     if (pokemon.spriteIndex === undefined) return null;
     const col = (pokemon.spriteIndex % SPRITE_COLS) * 2; // *2 for pairs, take left
     const row = Math.floor(pokemon.spriteIndex / SPRITE_COLS);
